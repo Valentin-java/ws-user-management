@@ -7,6 +7,8 @@ CREATE TABLE IF NOT EXISTS "ws_user_profile" (
     phone_number VARCHAR(255) NOT NULL,
     activity_status VARCHAR(255),
     customer_role VARCHAR(255),
+    text_error VARCHAR(255),
+    pin VARCHAR(255),
     created_at TIMESTAMP,
     updated_at TIMESTAMP,
     CONSTRAINT ws_user_profile_pkey PRIMARY KEY (id),

@@ -53,6 +53,12 @@ public class UserProfile {
     @Column(name = "customer_role")
     private CustomerRole customerRole;
 
+    @Column(name = "pin")
+    private String pin;
+
+    @Column(name = "text_error")
+    private String textError;
+
     @Column(name = "created_at")
     private String createdAt;
 
