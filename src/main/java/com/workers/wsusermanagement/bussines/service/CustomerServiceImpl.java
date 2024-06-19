@@ -2,7 +2,9 @@ package com.workers.wsusermanagement.bussines.service;
 
 import com.workers.wsusermanagement.bussines.interfaces.CustomerService;
 import com.workers.wsusermanagement.bussines.service.validation.signup.SignUpValidationService;
+import com.workers.wsusermanagement.rest.dto.OtpRequest;
 import com.workers.wsusermanagement.rest.dto.SignUpRequest;
+import com.workers.wsusermanagement.rest.dto.SignUpResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -16,15 +18,27 @@ public class CustomerServiceImpl implements CustomerService {
 
     private final SignUpValidationService validationService;
 
-    public void signingUp(SignUpRequest request) {
+    @Override
+    public SignUpResponse signingUp(SignUpRequest request) {
         // Валидация данных
-        Optional.of(request)
+        return Optional.of(request)
                 .map(validationService::validate)
+                // проверим нет ли у нас уже такого пользователя
                 // если все ок, отправляем смс/пуш
-                // делаем запись в свою БД вместе с ПИН кодом шифрованным
-                // (ставим роль, т.к. источник как Customer)
-                // отдаем 200 если все ок(там пользователя перекидывает на след ЭФ)
+                // записываем/обновляем запись в БД вместе с хэш ПИН кодом(его тоже обновляем, при необходимости)
+                // если запись новая - ставим роль, т.к. источник как Customer
+                // отдаем 200 и номер телефона, если все ок, пользователя перекидывает на след ЭФ)
+                .map(e -> new SignUpResponse(""))
                 .orElse(null);
+    }
+
+    @Override
+    public void validateOtp(OtpRequest request) {
+        // по номеру телефона ищем пользователя
+        // берем его отп и сравниваем
+        // если все ок - идем в ws-auth регистрируем пользователя
+        // получаем токен - отдаем кленту
+        //
     }
 
 

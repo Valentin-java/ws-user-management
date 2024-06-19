@@ -1,6 +1,7 @@
 package com.workers.wsusermanagement.rest.controller;
 
 import com.workers.wsusermanagement.bussines.interfaces.CustomerService;
+import com.workers.wsusermanagement.rest.dto.OtpRequest;
 import com.workers.wsusermanagement.rest.dto.SignUpRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -18,7 +19,13 @@ public class CustomerController {
 
     @PostMapping("/sign-up")
     public ResponseEntity<?> signUp(@RequestBody SignUpRequest request) {
-
-        return ResponseEntity.ok(null);
+        return ResponseEntity.ok(customerService.signingUp(request));
     }
+
+    @PostMapping("/otp")
+    public void validateOtp(@RequestBody OtpRequest request) {
+        customerService.validateOtp(request);
+    }
+
+    // теперь надоподумать о том как мы будем узнавать какой пользователь дергнул ручку
 }

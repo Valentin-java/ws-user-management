@@ -1,5 +1,6 @@
 package com.workers.wsusermanagement.rest.controller;
 
+import com.workers.wsusermanagement.rest.dto.SignUpRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -13,8 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class HandymanController {
 
     @PostMapping("/sign-up")
-    public ResponseEntity<?> signUp(@RequestBody AuthRequest request) {
-
+    public ResponseEntity<?> signUp(@RequestBody SignUpRequest request) {
         return ResponseEntity.ok(null);
     }
 }
