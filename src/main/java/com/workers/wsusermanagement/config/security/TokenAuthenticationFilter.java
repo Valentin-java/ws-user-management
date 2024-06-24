@@ -57,8 +57,7 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
         String header = securityUtil.getHeaderRequest(context);
         if (Strings.isEmpty(header)
                 || !header.startsWith(AUTH_TOKEN_PREFIX)) {
-            throw new ResponseStatusException(UNAUTHORIZED,
-                    "Отсуствует, либо заголовок, либо токен");
+            throw new ResponseStatusException(UNAUTHORIZED, "Отсуствует, либо заголовок, либо токен");
         }
         return context;
     }
@@ -68,7 +67,7 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
 
         if (user == null) {
             log.error("Token provided but not content data!");
-            throw new ResponseStatusException(UNAUTHORIZED, "Отсуствует, либо заголовок, либо токен");
+            throw new ResponseStatusException(UNAUTHORIZED, "В токене отсуствует имя пользователя");
         }
         return context;
     }
@@ -79,7 +78,7 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
 
         Claims claims = securityUtil.extractAllClaims(token);
         if (securityUtil.isTokenExpired(claims)) {
-            log.error("Token provided but not content data!");
+            log.error("[validateTokenExpiration] Время жизни токена истекло.");
             throw new ResponseStatusException(UNAUTHORIZED, "Время жизни токена истекло");
         }
         return context;

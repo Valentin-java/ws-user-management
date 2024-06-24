@@ -5,8 +5,10 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import jakarta.annotation.PostConstruct;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.security.KeyFactory;
 import java.security.PublicKey;
@@ -16,8 +18,10 @@ import java.util.function.Function;
 
 import static com.workers.wsusermanagement.util.Constants.AUTH_HEADER_NAME;
 import static com.workers.wsusermanagement.util.Constants.AUTH_TOKEN_PREFIX;
+import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
 @Component
+@Slf4j
 public class SecurityValidationUtil {
 
     @Value("${jwt.public.key}")
@@ -60,7 +64,8 @@ public class SecurityValidationUtil {
             KeyFactory keyFactory = KeyFactory.getInstance("RSA");
             return keyFactory.generatePublic(spec);
         } catch (Exception e) {
-            throw new IllegalArgumentException("Invalid public key", e);
+            log.error("[getPublicKeyFromPem] Invalid public key");
+            throw new ResponseStatusException(UNAUTHORIZED, "Invalid public key");
         }
     }
 
