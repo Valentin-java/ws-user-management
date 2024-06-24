@@ -35,7 +35,7 @@ public class SecurityValidationUtil {
     }
 
     public Boolean isTokenExpired(Claims claims) {
-        return !claims.getExpiration().before(new Date());
+        return claims.getExpiration().before(new Date());
     }
 
     public String extractClaimByName(String token, String claimName) {
