@@ -26,6 +26,4 @@ public class CustomerController {
     public void validateOtp(@RequestBody OtpRequest request) {
         customerService.validateOtp(request);
     }
-
-    // теперь надоподумать о том как мы будем узнавать какой пользователь дергнул ручку
 }
