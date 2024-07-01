@@ -38,17 +38,11 @@ public class SecurityValidationUtil {
         return claims.getExpiration().before(new Date());
     }
 
-    public String extractClaimByName(String token, String claimName) {
-        return (String) extractAllClaims(token).get(claimName);
-    }
-
-    // Извлечение определенного параметра из токена
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
         final Claims claims = extractAllClaims(token);
         return claimsResolver.apply(claims);
     }
 
-    // Извлечение всех параметров из токена
     public Claims extractAllClaims(String token) {
         return Jwts.parser()
                 .verifyWith(publicKey)

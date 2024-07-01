@@ -13,17 +13,21 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.logging.log4j.util.Strings;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 import static com.workers.wsusermanagement.util.Constants.AUTH_TOKEN_PREFIX;
 import static com.workers.wsusermanagement.util.Constants.UNEXPECTED_TEXT_ERROR;
+import static java.util.stream.Collectors.toList;
 import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
 @Slf4j
@@ -36,7 +40,7 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request,
                                     @NonNull HttpServletResponse response,
-                                    @NonNull FilterChain filterChain) throws ServletException, IOException {
+                                    @NonNull FilterChain filterChain) throws IOException {
 
         log.debug("[doFilterInternal] Start method");
         try {
@@ -91,13 +95,24 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
     }
 
     private TokenAuthenticationFilterContext setAuthenticationContext(TokenAuthenticationFilterContext context) {
-        String userId = securityUtil.getUsername(context);
-        log.debug("[setAuthenticationContext] UserId: {}", userId);
+        String username = securityUtil.getUsername(context);
+        log.debug("[setAuthenticationContext] UserId: {}", username);
 
-        Authentication authentication = new UsernamePasswordAuthenticationToken(userId, userId, new ArrayList<>());
+        var grantedAuthorities = getGrantedAuthority(context);
+
+        Authentication authentication = new UsernamePasswordAuthenticationToken(username, null, grantedAuthorities);
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         return context;
+    }
+
+    private List<GrantedAuthority> getGrantedAuthority(TokenAuthenticationFilterContext context) {
+        Claims claims = securityUtil.extractAllClaims(securityUtil.getToken(context));
+        String roles = (String) claims.get("roles");
+
+        return Arrays.stream(roles.split(","))
+                .map(role -> new SimpleGrantedAuthority("ROLE_" + role))
+                .collect(toList());
     }
 
     private void continueFilterChain(TokenAuthenticationFilterContext context) {
