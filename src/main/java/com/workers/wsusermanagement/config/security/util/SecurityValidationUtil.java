@@ -1,4 +1,4 @@
-package com.workers.wsusermanagement.util;
+package com.workers.wsusermanagement.config.security.util;
 
 import com.workers.wsusermanagement.config.security.context.TokenAuthenticationFilterContext;
 import io.jsonwebtoken.Claims;
@@ -6,22 +6,28 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.security.KeyFactory;
 import java.security.PublicKey;
 import java.security.spec.X509EncodedKeySpec;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 import java.util.function.Function;
 
-import static com.workers.wsusermanagement.util.Constants.AUTH_HEADER_NAME;
-import static com.workers.wsusermanagement.util.Constants.AUTH_TOKEN_PREFIX;
+import static com.workers.wsusermanagement.config.security.util.Constants.AUTH_HEADER_NAME;
+import static com.workers.wsusermanagement.config.security.util.Constants.AUTH_TOKEN_PREFIX;
+import static java.util.stream.Collectors.toList;
 import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
-@Component
 @Slf4j
+@Component
 public class SecurityValidationUtil {
 
     @Value("${jwt.public.key}")
@@ -74,5 +80,28 @@ public class SecurityValidationUtil {
 
     public String getHeaderRequest(TokenAuthenticationFilterContext context) {
         return context.getRequest().getHeader(AUTH_HEADER_NAME);
+    }
+
+    public boolean whenHeaderMissing(TokenAuthenticationFilterContext context) {
+        String header = getHeaderRequest(context);
+        return Strings.isEmpty(header)
+                || !header.startsWith(AUTH_TOKEN_PREFIX);
+    }
+    public boolean whenUsernameMissing(TokenAuthenticationFilterContext context) {
+        return getUsername(context) == null;
+    }
+
+    public boolean whenTokenExpired(TokenAuthenticationFilterContext context) {
+        var claims = extractAllClaims(getToken(context));
+        return isTokenExpired(claims);
+    }
+
+    public List<GrantedAuthority> getGrantedAuthority(TokenAuthenticationFilterContext context) {
+        Claims claims = extractAllClaims(getToken(context));
+        String roles = (String) claims.get("roles");
+
+        return Arrays.stream(roles.split(","))
+                .map(role -> new SimpleGrantedAuthority("ROLE_" + role))
+                .collect(toList());
     }
 }

@@ -1,0 +1,5 @@
+spring:
+  application:
+    name: ws-user-management
+  config:
+    import: configserver:${CONFIG_SERVER}

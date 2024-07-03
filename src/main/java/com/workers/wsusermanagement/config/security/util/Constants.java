@@ -1,4 +1,4 @@
-package com.workers.wsusermanagement.util;
+package com.workers.wsusermanagement.config.security.util;
 
 public class Constants {
 
