@@ -20,8 +20,10 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     public SignUpResponse signingUp(SignUpRequest request) {
-        // Валидация данных
-        return new SignUpResponse("+7911");
+//        Optional.of(request)
+//                .map(this::)
+
+        return new SignUpResponse("+7911", "test ok");
 //        return Optional.of(request)
 //                .map(validationService::validate)
                 // проверим нет ли у нас уже такого пользователя (здесь в будущем м.б. проверка блокировок и тп)
