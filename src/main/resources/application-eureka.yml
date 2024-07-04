@@ -43,8 +43,8 @@ jwt:
 auth:
   rest:
     authUrl: ${AUTH_URL}/v1/workers/auth/login
-    username: ws-user-management
-    password: 123456
+    username: ${AUTH_USERNAME}
+    password: ${AUTH_PASSWORD}
 
 management:
   tracing:
