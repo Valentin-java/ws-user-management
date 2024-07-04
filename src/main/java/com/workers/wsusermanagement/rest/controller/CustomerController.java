@@ -5,7 +5,6 @@ import com.workers.wsusermanagement.rest.dto.OtpRequest;
 import com.workers.wsusermanagement.rest.dto.SignUpRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,8 +18,12 @@ public class CustomerController {
     private final CustomerService customerService;
 
     @PostMapping("/sign-up")
-//    @PreAuthorize("hasRole('ROLE_USER')")
     public ResponseEntity<?> signUp(@RequestBody SignUpRequest request) {
+        return ResponseEntity.ok(customerService.signingUp(request));
+    }
+
+    @PostMapping("/sign-in")
+    public ResponseEntity<?> signIn(@RequestBody SignUpRequest request) {
         return ResponseEntity.ok(customerService.signingUp(request));
     }
 

@@ -30,6 +30,7 @@ ext {
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
 
 	// сервис еврики, там же конфиги
 	implementation 'org.springframework.cloud:spring-cloud-starter-config'

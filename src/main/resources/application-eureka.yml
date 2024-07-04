@@ -40,6 +40,11 @@ jwt:
     expiration: 3600000
   refresh-token:
     expiration: 36000000
+auth:
+  rest:
+    authUrl: ${AUTH_URL}/v1/workers/auth/login
+    username: ws-user-management
+    password: 123456
 
 management:
   tracing:
