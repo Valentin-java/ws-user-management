@@ -1,8 +1,8 @@
-package com.workers.wsusermanagement.rest.controller;
+package com.workers.wsusermanagement.rest.inbound.controller;
 
 import com.workers.wsusermanagement.bussines.interfaces.CustomerService;
-import com.workers.wsusermanagement.rest.dto.OtpRequest;
-import com.workers.wsusermanagement.rest.dto.SignUpRequest;
+import com.workers.wsusermanagement.rest.inbound.dto.OtpRequest;
+import com.workers.wsusermanagement.rest.inbound.dto.SignUpRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;

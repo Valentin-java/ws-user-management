@@ -1,4 +1,4 @@
-package com.workers.wsusermanagement.config.feign.dto;
+package com.workers.wsusermanagement.rest.outbound.feign.dto;
 
 public record AuthRequest(
         String username,

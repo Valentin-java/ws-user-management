@@ -1,8 +1,8 @@
 package com.workers.wsusermanagement.bussines.interfaces;
 
-import com.workers.wsusermanagement.rest.dto.OtpRequest;
-import com.workers.wsusermanagement.rest.dto.SignUpRequest;
-import com.workers.wsusermanagement.rest.dto.SignUpResponse;
+import com.workers.wsusermanagement.rest.inbound.dto.OtpRequest;
+import com.workers.wsusermanagement.rest.inbound.dto.SignUpRequest;
+import com.workers.wsusermanagement.rest.inbound.dto.SignUpResponse;
 
 public interface CustomerService {
 

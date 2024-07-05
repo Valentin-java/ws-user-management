@@ -1,8 +1,8 @@
-package com.workers.wsusermanagement.config.feign.service;
+package com.workers.wsusermanagement.config.resttemplate.service;
 
-import com.workers.wsusermanagement.config.feign.dto.AuthRequest;
-import com.workers.wsusermanagement.config.feign.dto.AuthResponse;
-import com.workers.wsusermanagement.config.feign.properties.CredentialProps;
+import com.workers.wsusermanagement.rest.outbound.feign.dto.AuthRequest;
+import com.workers.wsusermanagement.rest.outbound.feign.dto.AuthResponse;
+import com.workers.wsusermanagement.config.resttemplate.properties.CredentialProps;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import jakarta.annotation.PostConstruct;
@@ -25,6 +25,7 @@ public class AuthService {
 
     private final RestTemplate restTemplate;
     private final CredentialProps credentialProps;
+    private String cachedToken;
     @Value("${jwt.public.key}")
     private String publicKeyString;
 
@@ -36,14 +37,12 @@ public class AuthService {
     }
 
     public String getToken() {
-        String token = getTokenFromSecurityContext();
-        if (isTokenValid(token)) {
-            return token;
+        if (isTokenValid(cachedToken)) {
+            return cachedToken;
         }
 
-        token = fetchNewToken();
-        updateSecurityContextWithNewToken(token);
-        return token;
+        cachedToken = fetchNewToken();
+        return cachedToken;
     }
 
     private String fetchNewToken() {
@@ -64,22 +63,5 @@ public class AuthService {
                 .build()
                 .parseSignedClaims(token)
                 .getPayload();
-    }
-
-
-    private String getTokenFromSecurityContext() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication != null && authentication.getDetails() instanceof String) {
-            return (String) authentication.getDetails();
-        }
-        return null;
-    }
-
-    private void updateSecurityContextWithNewToken(String token) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication != null && authentication instanceof AbstractAuthenticationToken) {
-            ((AbstractAuthenticationToken) authentication).setDetails(token);
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-        }
     }
 }

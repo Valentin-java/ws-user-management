@@ -17,6 +17,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Optional;
 
 import static com.workers.wsusermanagement.config.security.util.Constants.UNEXPECTED_TEXT_ERROR;
@@ -29,11 +30,26 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
 
     private final SecurityValidationUtil securityUtil;
 
+    private static final List<String> WHITELIST = List.of(
+            "/actuator/health",
+            "/actuator/prometheus",
+            "/advisor",
+            "/swagger-ui",
+            "/specs",
+            "/v1/workers/customer/sign-up");
+
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request,
                                     @NonNull HttpServletResponse response,
-                                    @NonNull FilterChain filterChain) throws IOException {
+                                    @NonNull FilterChain filterChain) throws IOException, ServletException {
 
+        if (!WHITELIST.contains(request.getRequestURI())) {
+            doFilterRequest(request, response, filterChain);
+        }
+        filterChain.doFilter(request, response);
+    }
+
+    private void doFilterRequest(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws IOException {
         log.debug("[doFilterInternal] Start method");
         try {
             Optional.of(createContextFilter(request, response, filterChain))
@@ -48,7 +64,8 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
             response.getWriter().write(e.getMessage());
         }
     }
-    
+
+
     private TokenAuthenticationFilterContext createContextFilter(HttpServletRequest request,
                                                                  HttpServletResponse response,
                                                                  FilterChain filterChain) {

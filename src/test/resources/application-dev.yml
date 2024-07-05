@@ -34,3 +34,11 @@ jwt:
     expiration: 3600000
   refresh-token:
     expiration: 36000000
+auth:
+  rest:
+    authUrl: http://localhost:8761/v1/workers/auth/login
+    username: test
+    password: test
+feign:
+  ws-auth:
+    url: http://localhost:8761
