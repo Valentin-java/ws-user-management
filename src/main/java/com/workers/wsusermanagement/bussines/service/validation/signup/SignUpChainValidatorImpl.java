@@ -1,6 +1,6 @@
 package com.workers.wsusermanagement.bussines.service.validation.signup;
 
-import com.workers.wsusermanagement.rest.dto.SignUpRequest;
+import com.workers.wsusermanagement.rest.inbound.dto.SignUpRequest;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ResponseStatusException;
 

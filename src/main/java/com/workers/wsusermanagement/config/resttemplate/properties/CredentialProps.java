@@ -1,4 +1,4 @@
-package com.workers.wsusermanagement.config.feign.properties;
+package com.workers.wsusermanagement.config.resttemplate.properties;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;

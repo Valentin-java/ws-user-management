@@ -1,4 +1,4 @@
-package com.workers.wsusermanagement.rest.handler;
+package com.workers.wsusermanagement.rest.inbound.handler;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;

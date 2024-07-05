@@ -25,7 +25,8 @@ public class SecurityConfiguration {
             "/actuator/prometheus",
             "/advisor/**",
             "/swagger-ui/**",
-            "/specs/**"
+            "/specs/**",
+            "/v1/workers/customer/**"
     };
 
     @Bean

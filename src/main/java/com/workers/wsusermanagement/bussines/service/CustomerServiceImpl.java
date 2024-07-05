@@ -2,26 +2,31 @@ package com.workers.wsusermanagement.bussines.service;
 
 import com.workers.wsusermanagement.bussines.interfaces.CustomerService;
 import com.workers.wsusermanagement.bussines.service.validation.signup.SignUpValidationService;
-import com.workers.wsusermanagement.rest.dto.OtpRequest;
-import com.workers.wsusermanagement.rest.dto.SignUpRequest;
-import com.workers.wsusermanagement.rest.dto.SignUpResponse;
+import com.workers.wsusermanagement.rest.inbound.dto.OtpRequest;
+import com.workers.wsusermanagement.rest.inbound.dto.SignUpRequest;
+import com.workers.wsusermanagement.rest.inbound.dto.SignUpResponse;
+import com.workers.wsusermanagement.rest.outbound.feign.client.WsAuthFeignClient;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Optional;
+
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class CustomerServiceImpl implements CustomerService {
 
-    private final SignUpValidationService validationService;
+    private final WsAuthFeignClient wsAuthFeignClient;
 
     @Override
     public SignUpResponse signingUp(SignUpRequest request) {
-//        Optional.of(request)
-//                .map(this::)
+        Optional.of(request)
+                .map(wsAuthFeignClient::requestToRegistryCustomer)
+                .orElseThrow(() -> new ResponseStatusException(BAD_REQUEST, "Не удалось зарегистрировать клиента"));
 
         return new SignUpResponse("+7911", "test ok");
 //        return Optional.of(request)

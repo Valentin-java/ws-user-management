@@ -1,7 +1,7 @@
 package com.workers.wsusermanagement.bussines.service.validation.signup.chain;
 
 import com.workers.wsusermanagement.bussines.service.validation.signup.SignUpValidator;
-import com.workers.wsusermanagement.rest.dto.SignUpRequest;
+import com.workers.wsusermanagement.rest.inbound.dto.SignUpRequest;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
@@ -18,14 +18,6 @@ public class PhoneNumberValidator implements SignUpValidator {
         return PHONE_NUMBER_VALIDATOR;
     }
 
-    /**
-     * Validates a Russian phone number after cleaning it from spaces, dashes, and brackets.
-     * Throws an IllegalArgumentException if the number is invalid.
-     *
-     * @param request The phone number to validate.
-     * @return true if the phone number is valid.
-     * @throws IllegalArgumentException if the phone number is invalid.
-     */
     @Override
     public void validate(SignUpRequest request, List<String> errors) {
         if (request.phoneNumber() == null) {
@@ -34,10 +26,8 @@ public class PhoneNumberValidator implements SignUpValidator {
 
         String cleanedNumber = request.phoneNumber().replaceAll("[ -()]", "");
 
-        // Regex to match Russian phone number pattern +79xxxxxxxxx
         String regex = "\\+79\\d{9}";
 
-        // Check if the cleaned number matches the pattern
         if (!cleanedNumber.matches(regex)) {
             errors.add("Invalid phone number format");
         }

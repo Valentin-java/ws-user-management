@@ -1,4 +1,4 @@
-package com.workers.wsusermanagement.rest.dto;
+package com.workers.wsusermanagement.rest.inbound.dto;
 
 public record SignUpResponse(
         String phoneNumber,
