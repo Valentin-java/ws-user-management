@@ -2,6 +2,7 @@ package com.workers.wsusermanagement.rest.outbound.mapper;
 
 import com.workers.wsusermanagement.config.mapper.MapperConfiguration;
 import com.workers.wsusermanagement.rest.inbound.dto.SignUpRequest;
+import com.workers.wsusermanagement.rest.outbound.feign.dto.AssignRoleRequest;
 import com.workers.wsusermanagement.rest.outbound.feign.dto.AuthRequest;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -10,5 +11,9 @@ import org.mapstruct.Mapping;
 public interface AuthRequestMapper {
 
     @Mapping(target = "username", source = "phoneNumber")
-    AuthRequest toRest(SignUpRequest request);
+    AuthRequest toAuthRequest(SignUpRequest request);
+
+    @Mapping(target = "username", source = "phoneNumber")
+    @Mapping(target = "role", source = "customerRole")
+    AssignRoleRequest toAssignRoleRequest(SignUpRequest request);
 }

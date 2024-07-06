@@ -23,12 +23,11 @@ public class SignUpChainValidatorImpl implements SignUpValidationService {
     }
 
     @Override
-    public SignUpRequest validate(SignUpRequest request) {
+    public void validate(SignUpRequest request) {
         List<String> errors = new ArrayList<>();
         validators.forEach(v -> v.validate(request, errors));
         if (!errors.isEmpty()) {
             throw new ResponseStatusException(BAD_REQUEST, errors.stream().collect(Collectors.joining(System.lineSeparator())));
         }
-        return request;
     }
 }

@@ -4,5 +4,5 @@ import com.workers.wsusermanagement.rest.inbound.dto.SignUpRequest;
 
 public interface SignUpValidationService {
 
-    SignUpRequest validate(SignUpRequest request);
+    void validate(SignUpRequest request);
 }
