@@ -16,6 +16,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
+import java.time.LocalDateTime;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -42,9 +46,6 @@ public class UserProfile {
     @Column(name = "last_name")
     private String lastName;
 
-    @Column(name = "phone_number", nullable = false)
-    private String phoneNumber;
-
     @Enumerated(EnumType.STRING)
     @Column(name = "activity_status")
     private ActivityStatus activityStatus;
@@ -53,15 +54,14 @@ public class UserProfile {
     @Column(name = "customer_role")
     private CustomerRole customerRole;
 
-    @Column(name = "pin")
-    private String pin;
-
     @Column(name = "text_error")
     private String textError;
 
     @Column(name = "created_at")
-    private String createdAt;
+    @CreationTimestamp
+    private LocalDateTime createdAt;
 
     @Column(name = "updated_at")
-    private String updatedAt;
+    @UpdateTimestamp
+    private LocalDateTime updatedAt;
 }

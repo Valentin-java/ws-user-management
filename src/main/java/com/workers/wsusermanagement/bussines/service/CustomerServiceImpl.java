@@ -1,43 +1,38 @@
 package com.workers.wsusermanagement.bussines.service;
 
 import com.workers.wsusermanagement.bussines.interfaces.CustomerService;
-import com.workers.wsusermanagement.bussines.service.validation.signup.SignUpValidationService;
+import com.workers.wsusermanagement.bussines.service.signup.context.SignUpContext;
+import com.workers.wsusermanagement.bussines.service.signup.interfaces.SignUpService;
+import com.workers.wsusermanagement.persistence.enums.ActivityStatus;
+import com.workers.wsusermanagement.persistence.enums.CustomerRole;
 import com.workers.wsusermanagement.rest.inbound.dto.OtpRequest;
 import com.workers.wsusermanagement.rest.inbound.dto.SignUpRequest;
 import com.workers.wsusermanagement.rest.inbound.dto.SignUpResponse;
-import com.workers.wsusermanagement.rest.outbound.feign.client.WsAuthFeignClient;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
-
-import java.util.Optional;
-
-import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class CustomerServiceImpl implements CustomerService {
 
-    private final WsAuthFeignClient wsAuthFeignClient;
+    private final SignUpService signUpService;
 
     @Override
-    public SignUpResponse signingUp(SignUpRequest request) {
-        Optional.of(request)
-                .map(wsAuthFeignClient::requestToRegistryCustomer)
-                .orElseThrow(() -> new ResponseStatusException(BAD_REQUEST, "Не удалось зарегистрировать клиента"));
+    public SignUpResponse signUp(SignUpRequest request) {
+        var newCustomer = createProcessContext(request);
+        return signUpService.signUpProcess(newCustomer);
+    }
 
-        return new SignUpResponse("+7911", "test ok");
-//        return Optional.of(request)
-//                .map(validationService::validate)
-                // проверим нет ли у нас уже такого пользователя (здесь в будущем м.б. проверка блокировок и тп)
-                // если все ок, отправляем смс/пуш
-                // записываем/обновляем запись в БД вместе с хэш ПИН кодом(его тоже обновляем, при необходимости)
-                // если запись новая - ставим роль, т.к. источник как Customer
-                // отдаем 200 и номер телефона, если все ок, пользователя перекидывает на след ЭФ)
-//                .map(e -> new SignUpResponse(""))
-//                .orElse(null);
+    @Override
+    public SignUpResponse signIn(SignUpRequest request) {
+        return null;
+    }
+
+    @Override
+    public SignUpResponse restoreProfile(SignUpRequest request) {
+        return null;
     }
 
     @Override
@@ -46,6 +41,15 @@ public class CustomerServiceImpl implements CustomerService {
         // берем его отп и сравниваем
         // если все ок - идем в ws-auth регистрируем пользователя
         // получаем токен - отдаем кленту
+    }
+
+    private static SignUpContext createProcessContext(SignUpRequest request) {
+        var newCustomer = new SignUpRequest(
+                request.phoneNumber(),
+                request.password(),
+                ActivityStatus.INACTIVE,
+                CustomerRole.CUSTOMER);
+        return new SignUpContext().setSignUpRequest(newCustomer);
     }
 
     // в остальных вызовах мы будем узнавать пользователя по номеру телефона
@@ -69,4 +73,6 @@ public class CustomerServiceImpl implements CustomerService {
     //Так же будет висеть нотификация для пользователя, что необходимо дозаполнить свой профиль.
 
 
+    // логин - стандартный
+    // логин - восстановление профиля
 }

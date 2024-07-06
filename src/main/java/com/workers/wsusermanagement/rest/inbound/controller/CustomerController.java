@@ -19,12 +19,12 @@ public class CustomerController {
 
     @PostMapping("/sign-up")
     public ResponseEntity<?> signUp(@RequestBody SignUpRequest request) {
-        return ResponseEntity.ok(customerService.signingUp(request));
+        return ResponseEntity.ok(customerService.signUp(request));
     }
 
     @PostMapping("/sign-in")
     public ResponseEntity<?> signIn(@RequestBody SignUpRequest request) {
-        return ResponseEntity.ok(customerService.signingUp(request));
+        return ResponseEntity.ok(customerService.signIn(request));
     }
 
     @PostMapping("/otp")
