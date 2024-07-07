@@ -1,6 +1,6 @@
 package com.workers.wsusermanagement.bussines.service.validation.signup;
 
-import com.workers.wsusermanagement.rest.inbound.dto.SignUpRequest;
+import com.workers.wsusermanagement.bussines.service.common.model.SignRequest;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -23,7 +23,7 @@ public class SignUpChainValidatorImpl implements SignUpValidationService {
     }
 
     @Override
-    public void validate(SignUpRequest request) {
+    public void validate(SignRequest request) {
         List<String> errors = new ArrayList<>();
         validators.forEach(v -> v.validate(request, errors));
         if (!errors.isEmpty()) {

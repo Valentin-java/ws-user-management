@@ -1,6 +1,7 @@
 package com.workers.wsusermanagement.bussines.service.validation.signup;
 
-import com.workers.wsusermanagement.rest.inbound.dto.SignUpRequest;
+import com.workers.wsusermanagement.bussines.service.common.model.SignRequest;
+import com.workers.wsusermanagement.bussines.service.signup.model.SignUpRequest;
 
 import java.util.List;
 
@@ -8,5 +9,5 @@ public interface SignUpValidator {
 
     Integer getOrder();
 
-    void validate(SignUpRequest request, List<String> errors);
+    void validate(SignRequest request, List<String> errors);
 }

@@ -64,4 +64,7 @@ public class UserProfile {
     @Column(name = "updated_at")
     @UpdateTimestamp
     private LocalDateTime updatedAt;
+
+    @Column(name = "last_visit_at")
+    private LocalDateTime lastVisitAt;
 }

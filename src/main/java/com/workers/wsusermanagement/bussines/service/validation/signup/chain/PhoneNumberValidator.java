@@ -1,7 +1,8 @@
 package com.workers.wsusermanagement.bussines.service.validation.signup.chain;
 
+import com.workers.wsusermanagement.bussines.service.common.model.SignRequest;
 import com.workers.wsusermanagement.bussines.service.validation.signup.SignUpValidator;
-import com.workers.wsusermanagement.rest.inbound.dto.SignUpRequest;
+
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
@@ -19,7 +20,7 @@ public class PhoneNumberValidator implements SignUpValidator {
     }
 
     @Override
-    public void validate(SignUpRequest request, List<String> errors) {
+    public void validate(SignRequest request, List<String> errors) {
         if (request.phoneNumber() == null) {
             errors.add("Phone number cannot be null");
         }

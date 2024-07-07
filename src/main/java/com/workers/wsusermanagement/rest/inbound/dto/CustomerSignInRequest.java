@@ -1,7 +1,7 @@
 package com.workers.wsusermanagement.rest.inbound.dto;
 
-public record SignUpResponse(
+public record CustomerSignInRequest(
         String phoneNumber,
-        String text
+        String password
 ) {
 }
