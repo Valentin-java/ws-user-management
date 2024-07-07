@@ -1,8 +1,9 @@
 package com.workers.wsusermanagement.rest.inbound.controller;
 
 import com.workers.wsusermanagement.bussines.interfaces.CustomerService;
+import com.workers.wsusermanagement.rest.inbound.dto.CustomerSignInRequest;
 import com.workers.wsusermanagement.rest.inbound.dto.OtpRequest;
-import com.workers.wsusermanagement.rest.inbound.dto.SignUpRequest;
+import com.workers.wsusermanagement.rest.inbound.dto.CustomerSignUpRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,12 +19,12 @@ public class CustomerController {
     private final CustomerService customerService;
 
     @PostMapping("/sign-up")
-    public ResponseEntity<?> signUp(@RequestBody SignUpRequest request) {
+    public ResponseEntity<?> signUp(@RequestBody CustomerSignUpRequest request) {
         return ResponseEntity.ok(customerService.signUp(request));
     }
 
     @PostMapping("/sign-in")
-    public ResponseEntity<?> signIn(@RequestBody SignUpRequest request) {
+    public ResponseEntity<?> signIn(@RequestBody CustomerSignInRequest request) {
         return ResponseEntity.ok(customerService.signIn(request));
     }
 

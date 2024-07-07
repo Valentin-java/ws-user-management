@@ -9,6 +9,7 @@ CREATE TABLE IF NOT EXISTS "ws_user_profile" (
     text_error VARCHAR(255),
     created_at TIMESTAMP,
     updated_at TIMESTAMP,
+    last_visit_at TIMESTAMP,
     CONSTRAINT ws_user_profile_pkey PRIMARY KEY (id),
     CONSTRAINT uk_username UNIQUE (username)
     );

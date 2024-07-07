@@ -2,7 +2,7 @@ package com.workers.wsusermanagement.persistence.mapper;
 
 import com.workers.wsusermanagement.config.mapper.MapperConfiguration;
 import com.workers.wsusermanagement.persistence.entity.UserProfile;
-import com.workers.wsusermanagement.rest.inbound.dto.SignUpRequest;
+import com.workers.wsusermanagement.bussines.service.signup.model.SignUpRequest;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 

@@ -1,8 +1,8 @@
 package com.workers.wsusermanagement.bussines.service.validation.signup;
 
-import com.workers.wsusermanagement.rest.inbound.dto.SignUpRequest;
+import com.workers.wsusermanagement.bussines.service.common.model.SignRequest;
 
 public interface SignUpValidationService {
 
-    void validate(SignUpRequest request);
+    void validate(SignRequest request);
 }

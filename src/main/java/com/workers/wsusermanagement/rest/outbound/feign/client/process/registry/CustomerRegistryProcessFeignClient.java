@@ -1,4 +1,4 @@
-package com.workers.wsusermanagement.rest.outbound.feign.client;
+package com.workers.wsusermanagement.rest.outbound.feign.client.process.registry;
 
 import com.workers.wsusermanagement.bussines.service.signup.context.SignUpContext;
 

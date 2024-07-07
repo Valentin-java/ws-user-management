@@ -1,6 +1,6 @@
 package com.workers.wsusermanagement.bussines.service.signup.context;
 
-import com.workers.wsusermanagement.rest.inbound.dto.SignUpRequest;
+import com.workers.wsusermanagement.bussines.service.signup.model.SignUpRequest;
 import com.workers.wsusermanagement.rest.outbound.feign.dto.AssignRoleRequest;
 import com.workers.wsusermanagement.rest.outbound.feign.dto.AuthRequest;
 import lombok.Data;

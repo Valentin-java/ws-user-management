@@ -1,7 +1,6 @@
-package com.workers.wsusermanagement.rest.outbound.feign.client;
+package com.workers.wsusermanagement.rest.outbound.feign.client.process.registry;
 
 import com.workers.wsusermanagement.bussines.service.signup.context.SignUpContext;
-import com.workers.wsusermanagement.bussines.service.validation.signup.SignUpValidationService;
 import com.workers.wsusermanagement.rest.outbound.feign.controller.WsAuthFeign;
 import com.workers.wsusermanagement.rest.outbound.mapper.AuthRequestMapper;
 import feign.FeignException;
@@ -22,7 +21,6 @@ import static org.springframework.http.HttpStatus.BAD_REQUEST;
 public class CustomerRegistryProcessFeignClientImpl implements CustomerRegistryProcessFeignClient {
 
     private final WsAuthFeign wsAuthFeign;
-    private final SignUpValidationService validationService;
     private final AuthRequestMapper authRequestMapper;
 
     @Override
@@ -30,18 +28,12 @@ public class CustomerRegistryProcessFeignClientImpl implements CustomerRegistryP
         log.debug("[requestToRegistryCustomer] Start requestToRegistryCustomer");
         try {
             return Optional.of(ctx)
-                    .map(this::validateRequest)
                     .map(this::mappingToAuthRequest)
                     .map(this::doRequestToRegistry)
                     .orElseThrow(() -> new ResponseStatusException(BAD_REQUEST, UNEXPECTED_ERROR_MESSAGE));
         } catch (FeignException e) {
             throw new ResponseStatusException(HttpStatusCode.valueOf(e.status()), extractSpecificMessage(e));
         }
-    }
-
-    private SignUpContext validateRequest(SignUpContext ctx) {
-        validationService.validate(ctx.getSignUpRequest());
-        return ctx;
     }
 
     private SignUpContext mappingToAuthRequest(SignUpContext ctx) {
