@@ -14,32 +14,32 @@ public interface SignUpMapper {
 
     @Mapping(target = "signUpRequest.phoneNumber", source = "phoneNumber")
     @Mapping(target = "signUpRequest.password", source = "password")
-    @Mapping(target = "signUpRequest.activityStatus", qualifiedByName = "getActivityStatus")
-    @Mapping(target = "signUpRequest.customerRole", qualifiedByName = "getCustomerRole")
+    @Mapping(target = "signUpRequest.activityStatus", source = ".", qualifiedByName = "getActivityStatus")
+    @Mapping(target = "signUpRequest.customerRole", source = ".", qualifiedByName = "getCustomerRole")
     @Mapping(target = "authRequest", ignore = true)
     @Mapping(target = "assignRoleRequest", ignore = true)
     SignUpContext toRegistryCustomerContext(UserSignUpRequest request);
 
     @Mapping(target = "signUpRequest.phoneNumber", source = "phoneNumber")
     @Mapping(target = "signUpRequest.password", source = "password")
-    @Mapping(target = "signUpRequest.activityStatus", qualifiedByName = "getActivityStatus")
-    @Mapping(target = "signUpRequest.customerRole", qualifiedByName = "getHandymanRole")
+    @Mapping(target = "signUpRequest.activityStatus", source = ".", qualifiedByName = "getActivityStatus")
+    @Mapping(target = "signUpRequest.customerRole", source = ".", qualifiedByName = "getHandymanRole")
     @Mapping(target = "authRequest", ignore = true)
     @Mapping(target = "assignRoleRequest", ignore = true)
     SignUpContext toRegistryHandymanContext(UserSignUpRequest request);
 
     @Named("getActivityStatus")
-    default ActivityStatus getActivityStatus() {
+    default ActivityStatus getActivityStatus(UserSignUpRequest request) {
         return ActivityStatus.INACTIVE;
     }
 
     @Named("getCustomerRole")
-    default CustomerRole getCustomerRole() {
+    default CustomerRole getCustomerRole(UserSignUpRequest request) {
         return CustomerRole.CUSTOMER;
     }
 
     @Named("getHandymanRole")
-    default CustomerRole getHandymanRole() {
+    default CustomerRole getHandymanRole(UserSignUpRequest request) {
         return CustomerRole.HANDYMAN;
     }
 }

@@ -49,6 +49,8 @@ auth:
 feign:
   ws-auth:
     url: ${AUTH_URL}
+  ws-notification:
+    url: ${NOTIFICATION_URL}
 
 management:
   tracing:

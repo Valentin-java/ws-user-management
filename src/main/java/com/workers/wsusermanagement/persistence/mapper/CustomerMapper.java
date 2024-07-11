@@ -17,5 +17,6 @@ public interface CustomerMapper {
     @Mapping(target = "textError", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
+    @Mapping(target = "lastVisitAt", ignore = true)
     UserProfile toEntity(SignUpRequest request);
 }
