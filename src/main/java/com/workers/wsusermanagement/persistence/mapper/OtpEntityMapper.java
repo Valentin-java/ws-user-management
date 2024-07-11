@@ -12,6 +12,7 @@ public interface OtpEntityMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "otp", source = "otp")
     @Mapping(target = "username", source = "userProfile.username")
+    @Mapping(target = "activityStatus", source = "resetPasswordRequest.activityStatus")
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
     OtpEntity toEntity(ResetPasswordContext ctx);
