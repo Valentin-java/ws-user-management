@@ -1,8 +1,8 @@
-package com.workers.wsusermanagement.rest.outbound.feign.controller;
+package com.workers.wsusermanagement.rest.outbound.feign;
 
-import com.workers.wsusermanagement.rest.outbound.feign.dto.AssignRoleRequest;
-import com.workers.wsusermanagement.rest.outbound.feign.dto.AuthRequest;
-import com.workers.wsusermanagement.rest.outbound.feign.dto.AuthResponse;
+import com.workers.wsusermanagement.rest.outbound.model.AssignRoleRequest;
+import com.workers.wsusermanagement.rest.outbound.model.AuthRequest;
+import com.workers.wsusermanagement.rest.outbound.model.AuthResponse;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;

@@ -1,9 +1,10 @@
-package com.workers.wsusermanagement.rest.outbound.feign.client.process.login;
+package com.workers.wsusermanagement.rest.outbound.process.login.client;
 
 import com.workers.wsusermanagement.bussines.service.signin.context.SignInContext;
 import com.workers.wsusermanagement.bussines.service.signin.model.SignInResponse;
-import com.workers.wsusermanagement.rest.outbound.feign.controller.WsAuthFeign;
+import com.workers.wsusermanagement.rest.outbound.feign.WsAuthFeign;
 import com.workers.wsusermanagement.rest.outbound.mapper.AuthRequestMapper;
+import com.workers.wsusermanagement.rest.outbound.process.login.interfaces.CustomerLoginProcessFeignClient;
 import feign.FeignException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

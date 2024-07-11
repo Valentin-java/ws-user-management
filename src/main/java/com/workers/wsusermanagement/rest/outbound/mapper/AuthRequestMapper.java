@@ -3,8 +3,8 @@ package com.workers.wsusermanagement.rest.outbound.mapper;
 import com.workers.wsusermanagement.bussines.service.signin.model.SignInRequest;
 import com.workers.wsusermanagement.config.mapper.MapperConfiguration;
 import com.workers.wsusermanagement.bussines.service.signup.model.SignUpRequest;
-import com.workers.wsusermanagement.rest.outbound.feign.dto.AssignRoleRequest;
-import com.workers.wsusermanagement.rest.outbound.feign.dto.AuthRequest;
+import com.workers.wsusermanagement.rest.outbound.model.AssignRoleRequest;
+import com.workers.wsusermanagement.rest.outbound.model.AuthRequest;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 

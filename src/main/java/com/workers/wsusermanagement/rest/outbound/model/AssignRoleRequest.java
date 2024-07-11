@@ -1,4 +1,4 @@
-package com.workers.wsusermanagement.rest.outbound.feign.dto;
+package com.workers.wsusermanagement.rest.outbound.model;
 
 public record AssignRoleRequest(
         String username,

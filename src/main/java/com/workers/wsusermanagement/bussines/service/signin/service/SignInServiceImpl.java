@@ -6,7 +6,7 @@ import com.workers.wsusermanagement.bussines.service.signin.model.SignInResponse
 import com.workers.wsusermanagement.bussines.service.validation.signup.SignUpValidationService;
 import com.workers.wsusermanagement.persistence.enums.ActivityStatus;
 import com.workers.wsusermanagement.persistence.repository.UserProfileRepository;
-import com.workers.wsusermanagement.rest.outbound.feign.client.process.login.CustomerLoginProcessFeignClient;
+import com.workers.wsusermanagement.rest.outbound.process.login.interfaces.CustomerLoginProcessFeignClient;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
