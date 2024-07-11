@@ -1,10 +1,13 @@
 package com.workers.wsusermanagement.bussines.service;
 
 import com.workers.wsusermanagement.bussines.interfaces.RestorePasswordService;
+import com.workers.wsusermanagement.bussines.service.confirmotp.interfaces.ConfirmationOtpService;
 import com.workers.wsusermanagement.bussines.service.reset.interfaces.ResetPasswordService;
 import com.workers.wsusermanagement.bussines.service.reset.model.ResetPasswordResponse;
 import com.workers.wsusermanagement.bussines.service.signup.model.SignUpRequest;
+import com.workers.wsusermanagement.rest.inbound.dto.OtpRequest;
 import com.workers.wsusermanagement.rest.inbound.dto.ResetUserPasswordRequest;
+import com.workers.wsusermanagement.rest.inbound.mapper.ConfirmationOtpMapper;
 import com.workers.wsusermanagement.rest.inbound.mapper.ResetPasswordMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,7 +25,9 @@ import static org.springframework.http.HttpStatus.BAD_REQUEST;
 public class RestorePasswordServiceImpl implements RestorePasswordService {
 
     private final ResetPasswordMapper resetPasswordMapper;
+    private final ConfirmationOtpMapper confirmationOtpMapper;
     private final ResetPasswordService resetPasswordService;
+    private final ConfirmationOtpService confirmationOtpService;
 
     /**
      * Здесь все проверим, деактивируем пользователя, сбросим пароль и отправим отп для восстановления.
@@ -32,7 +37,7 @@ public class RestorePasswordServiceImpl implements RestorePasswordService {
     @Override
     public ResetPasswordResponse resetPasswordByOtp(ResetUserPasswordRequest request) {
         return Optional.of(request)
-                .map(resetPasswordMapper::toLoginUserContext)
+                .map(resetPasswordMapper::toServiceContext)
                 .map(resetPasswordService::resetPasswordProcess)
                 .orElseThrow(() -> new ResponseStatusException(BAD_REQUEST, UNEXPECTED_ERROR_MESSAGE));
     }
@@ -45,9 +50,11 @@ public class RestorePasswordServiceImpl implements RestorePasswordService {
      * @return
      */
     @Override
-    public ResetPasswordResponse getConfirmationOtp(SignUpRequest request) {
-        // Подтверждение отп -> смена статуса отп на активный
-        return null;
+    public ResetPasswordResponse getConfirmationOtp(OtpRequest request) {
+        return Optional.of(request)
+                .map(confirmationOtpMapper::toServiceContext)
+                .map(confirmationOtpService::confirmOtpProcess)
+                .orElseThrow(() -> new ResponseStatusException(BAD_REQUEST, UNEXPECTED_ERROR_MESSAGE));
     }
 
     /**

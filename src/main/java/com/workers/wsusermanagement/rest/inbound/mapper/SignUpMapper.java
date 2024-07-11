@@ -18,7 +18,7 @@ public interface SignUpMapper {
     @Mapping(target = "signUpRequest.customerRole", source = ".", qualifiedByName = "getCustomerRole")
     @Mapping(target = "authRequest", ignore = true)
     @Mapping(target = "assignRoleRequest", ignore = true)
-    SignUpContext toRegistryCustomerContext(UserSignUpRequest request);
+    SignUpContext toCustomerServiceContext(UserSignUpRequest request);
 
     @Mapping(target = "signUpRequest.phoneNumber", source = "phoneNumber")
     @Mapping(target = "signUpRequest.password", source = "password")
@@ -26,7 +26,7 @@ public interface SignUpMapper {
     @Mapping(target = "signUpRequest.customerRole", source = ".", qualifiedByName = "getHandymanRole")
     @Mapping(target = "authRequest", ignore = true)
     @Mapping(target = "assignRoleRequest", ignore = true)
-    SignUpContext toRegistryHandymanContext(UserSignUpRequest request);
+    SignUpContext toHandymanServiceContext(UserSignUpRequest request);
 
     @Named("getActivityStatus")
     default ActivityStatus getActivityStatus(UserSignUpRequest request) {

@@ -24,7 +24,7 @@ public class CustomerAuthenticationServiceImpl extends AbstractUserAuthenticatio
 
     @Override
     protected SignUpContext mapToSignUpContext(UserSignUpRequest request) {
-        return signUpMapper.toRegistryCustomerContext(request);
+        return signUpMapper.toCustomerServiceContext(request);
     }
 
 

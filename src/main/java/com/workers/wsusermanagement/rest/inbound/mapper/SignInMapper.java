@@ -14,5 +14,5 @@ public interface SignInMapper {
     @Mapping(target = "authRequest", ignore = true)
     @Mapping(target = "signInResponse", ignore = true)
     @Mapping(target = "userProfile", ignore = true)
-    SignInContext toLoginUserContext(UserSignInRequest request);
+    SignInContext toServiceContext(UserSignInRequest request);
 }

@@ -17,7 +17,7 @@ public interface ResetPasswordMapper {
     @Mapping(target = "authRequest", ignore = true)
     @Mapping(target = "notificationRequest", ignore = true)
     @Mapping(target = "otp", ignore = true)
-    ResetPasswordContext toLoginUserContext(ResetUserPasswordRequest request);
+    ResetPasswordContext toServiceContext(ResetUserPasswordRequest request);
 
     @Named("getActivityStatus")
     default ActivityStatus getActivityStatus(ResetUserPasswordRequest request) {

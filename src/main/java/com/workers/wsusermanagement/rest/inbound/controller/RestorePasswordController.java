@@ -1,6 +1,7 @@
 package com.workers.wsusermanagement.rest.inbound.controller;
 
 import com.workers.wsusermanagement.bussines.interfaces.RestorePasswordService;
+import com.workers.wsusermanagement.rest.inbound.dto.OtpRequest;
 import com.workers.wsusermanagement.rest.inbound.dto.ResetUserPasswordRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -21,5 +22,8 @@ public class RestorePasswordController {
         return ResponseEntity.ok(restorePasswordService.resetPasswordByOtp(request));
     }
 
-
+    @PostMapping("/otp")
+    public ResponseEntity<?> getConfirmationByOtp(@RequestBody OtpRequest request) {
+        return ResponseEntity.ok(restorePasswordService.getConfirmationOtp(request));
+    }
 }
