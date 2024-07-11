@@ -1,10 +1,7 @@
 package com.workers.wsusermanagement.rest.outbound.process.notification.client;
 
 import com.workers.wsusermanagement.bussines.service.reset.context.ResetPasswordContext;
-import com.workers.wsusermanagement.bussines.service.signup.context.SignUpContext;
-import com.workers.wsusermanagement.rest.outbound.feign.WsAuthFeign;
 import com.workers.wsusermanagement.rest.outbound.feign.WsNotificationServiceFeign;
-import com.workers.wsusermanagement.rest.outbound.mapper.AuthRequestMapper;
 import com.workers.wsusermanagement.rest.outbound.mapper.NotificationRequestMapper;
 import com.workers.wsusermanagement.rest.outbound.process.notification.interfaces.WsNotificationServiceFeignClient;
 import feign.FeignException;
@@ -30,11 +27,11 @@ public class WsNotificationServiceFeignClientImpl implements WsNotificationServi
 
     @Override
     public ResetPasswordContext requestToSendOtp(ResetPasswordContext ctx) {
-        log.debug("[requestToRegistryCustomer] Start requestToRegistryCustomer");
+        log.debug("[requestToSendOtp] Start requestToSendOtp");
         try {
             return Optional.of(ctx)
                     .map(this::mappingToNotificationRequest)
-                    .map(this::doNotificationRequest)
+                    .map(this::doRequest)
                     .orElseThrow(() -> new ResponseStatusException(BAD_REQUEST, UNEXPECTED_ERROR_MESSAGE));
         } catch (FeignException e) {
             throw new ResponseStatusException(HttpStatusCode.valueOf(e.status()), extractSpecificMessage(e));
@@ -47,7 +44,7 @@ public class WsNotificationServiceFeignClientImpl implements WsNotificationServi
         return ctx;
     }
 
-    private ResetPasswordContext doNotificationRequest(ResetPasswordContext ctx) {
+    private ResetPasswordContext doRequest(ResetPasswordContext ctx) {
         var response = wsNotificationServiceFeign.sendNotificationMessage(ctx.getNotificationRequest());
         if (Boolean.TRUE.equals(response.getBody())) {
             return ctx;

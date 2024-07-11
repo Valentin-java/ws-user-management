@@ -1,8 +1,6 @@
 package com.workers.wsusermanagement.rest.outbound.process.reset.client;
 
 import com.workers.wsusermanagement.bussines.service.reset.context.ResetPasswordContext;
-import com.workers.wsusermanagement.bussines.service.signin.context.SignInContext;
-import com.workers.wsusermanagement.bussines.service.signin.model.SignInResponse;
 import com.workers.wsusermanagement.rest.outbound.feign.WsAuthFeign;
 import com.workers.wsusermanagement.rest.outbound.mapper.AuthRequestMapper;
 import com.workers.wsusermanagement.rest.outbound.process.reset.interfaces.ResetPasswordProcessFeignClient;
@@ -29,11 +27,11 @@ public class ResetPasswordProcessFeignClientImpl implements ResetPasswordProcess
 
     @Override
     public ResetPasswordContext requestToResetPassword(ResetPasswordContext ctx) {
-        log.debug("[requestToLoginCustomer] Start requestToLoginCustomer");
+        log.debug("[requestToResetPassword] Start requestToResetPassword");
         try {
             return Optional.of(ctx)
                     .map(this::mappingToAuthRequest)
-                    .map(this::doRequestToResetPassword)
+                    .map(this::doRequest)
                     .orElseThrow(() -> new ResponseStatusException(BAD_REQUEST, UNEXPECTED_ERROR_MESSAGE));
         } catch (FeignException e) {
             throw new ResponseStatusException(HttpStatusCode.valueOf(e.status()), extractSpecificMessage(e));
@@ -46,7 +44,7 @@ public class ResetPasswordProcessFeignClientImpl implements ResetPasswordProcess
         return ctx;
     }
 
-    private ResetPasswordContext doRequestToResetPassword(ResetPasswordContext ctx) {
+    private ResetPasswordContext doRequest(ResetPasswordContext ctx) {
         var response = wsAuthFeign.registerCustomer(ctx.getAuthRequest());
         if (Boolean.TRUE.equals(response.getBody())) {
             return ctx;

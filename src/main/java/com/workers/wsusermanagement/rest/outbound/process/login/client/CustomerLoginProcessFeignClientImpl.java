@@ -32,7 +32,7 @@ public class CustomerLoginProcessFeignClientImpl implements CustomerLoginProcess
         try {
             return Optional.of(ctx)
                     .map(this::mappingToAuthRequest)
-                    .map(this::doRequestToRegistry)
+                    .map(this::doRequest)
                     .orElseThrow(() -> new ResponseStatusException(BAD_REQUEST, UNEXPECTED_ERROR_MESSAGE));
         } catch (FeignException e) {
             throw new ResponseStatusException(HttpStatusCode.valueOf(e.status()), extractSpecificMessage(e));
@@ -45,7 +45,7 @@ public class CustomerLoginProcessFeignClientImpl implements CustomerLoginProcess
         return ctx;
     }
 
-    private SignInContext doRequestToRegistry(SignInContext ctx) {
+    private SignInContext doRequest(SignInContext ctx) {
         var response = wsAuthFeign.activationCustomer(ctx.getAuthRequest());
         if (response.getStatusCode().is2xxSuccessful()) {
             var responseBody = response.getBody() != null ? response.getBody() : null;
