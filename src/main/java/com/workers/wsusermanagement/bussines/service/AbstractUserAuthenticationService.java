@@ -36,7 +36,7 @@ public abstract class AbstractUserAuthenticationService {
 
     public SignInResponse signIn(UserSignInRequest request) {
         return Optional.of(request)
-                .map(signInMapper::toLoginUserContext)
+                .map(signInMapper::toServiceContext)
                 .map(signInService::signInProcess)
                 .orElseThrow(() -> new ResponseStatusException(BAD_REQUEST, UNEXPECTED_ERROR_MESSAGE));
     }

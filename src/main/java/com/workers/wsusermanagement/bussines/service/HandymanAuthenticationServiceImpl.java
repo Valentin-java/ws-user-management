@@ -24,6 +24,6 @@ public class HandymanAuthenticationServiceImpl extends AbstractUserAuthenticatio
 
     @Override
     protected SignUpContext mapToSignUpContext(UserSignUpRequest request) {
-        return signUpMapper.toRegistryHandymanContext(request);
+        return signUpMapper.toHandymanServiceContext(request);
     }
 }
