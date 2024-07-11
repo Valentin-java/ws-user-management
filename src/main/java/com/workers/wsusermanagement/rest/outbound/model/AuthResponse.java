@@ -1,4 +1,4 @@
-package com.workers.wsusermanagement.rest.outbound.feign.dto;
+package com.workers.wsusermanagement.rest.outbound.model;
 
 public record AuthResponse(
         String accessToken,

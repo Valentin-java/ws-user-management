@@ -2,7 +2,7 @@ package com.workers.wsusermanagement.rest.inbound.mapper;
 
 import com.workers.wsusermanagement.bussines.service.signin.context.SignInContext;
 import com.workers.wsusermanagement.config.mapper.MapperConfiguration;
-import com.workers.wsusermanagement.rest.inbound.dto.CustomerSignInRequest;
+import com.workers.wsusermanagement.rest.inbound.dto.UserSignInRequest;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
@@ -14,5 +14,5 @@ public interface SignInMapper {
     @Mapping(target = "authRequest", ignore = true)
     @Mapping(target = "signInResponse", ignore = true)
     @Mapping(target = "userProfile", ignore = true)
-    SignInContext toLoginCustomerContext(CustomerSignInRequest request);
+    SignInContext toLoginUserContext(UserSignInRequest request);
 }

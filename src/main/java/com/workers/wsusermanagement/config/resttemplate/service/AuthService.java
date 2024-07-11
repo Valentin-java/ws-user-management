@@ -1,16 +1,13 @@
 package com.workers.wsusermanagement.config.resttemplate.service;
 
-import com.workers.wsusermanagement.rest.outbound.feign.dto.AuthRequest;
-import com.workers.wsusermanagement.rest.outbound.feign.dto.AuthResponse;
+import com.workers.wsusermanagement.rest.outbound.model.AuthRequest;
+import com.workers.wsusermanagement.rest.outbound.model.AuthResponse;
 import com.workers.wsusermanagement.config.resttemplate.properties.CredentialProps;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.authentication.AbstractAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
