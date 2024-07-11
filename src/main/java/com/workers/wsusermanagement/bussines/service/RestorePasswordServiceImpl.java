@@ -4,7 +4,6 @@ import com.workers.wsusermanagement.bussines.interfaces.RestorePasswordService;
 import com.workers.wsusermanagement.bussines.service.reset.interfaces.ResetPasswordService;
 import com.workers.wsusermanagement.bussines.service.reset.model.ResetPasswordResponse;
 import com.workers.wsusermanagement.bussines.service.signup.model.SignUpRequest;
-import com.workers.wsusermanagement.bussines.service.signup.model.SignUpResponse;
 import com.workers.wsusermanagement.rest.inbound.dto.ResetUserPasswordRequest;
 import com.workers.wsusermanagement.rest.inbound.mapper.ResetPasswordMapper;
 import lombok.RequiredArgsConstructor;

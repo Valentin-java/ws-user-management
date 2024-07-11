@@ -31,7 +31,7 @@ public class CustomerRegistryProcessFeignClientImpl implements CustomerRegistryP
         try {
             return Optional.of(ctx)
                     .map(this::mappingToAuthRequest)
-                    .map(this::doRequestToRegistry)
+                    .map(this::doRequest)
                     .orElseThrow(() -> new ResponseStatusException(BAD_REQUEST, UNEXPECTED_ERROR_MESSAGE));
         } catch (FeignException e) {
             throw new ResponseStatusException(HttpStatusCode.valueOf(e.status()), extractSpecificMessage(e));
@@ -44,7 +44,7 @@ public class CustomerRegistryProcessFeignClientImpl implements CustomerRegistryP
         return ctx;
     }
 
-    private SignUpContext doRequestToRegistry(SignUpContext ctx) {
+    private SignUpContext doRequest(SignUpContext ctx) {
         var response = wsAuthFeign.registerCustomer(ctx.getAuthRequest());
         if (Boolean.TRUE.equals(response.getBody())) {
             return ctx;
