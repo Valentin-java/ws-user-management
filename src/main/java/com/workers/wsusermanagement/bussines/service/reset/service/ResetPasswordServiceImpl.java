@@ -7,6 +7,7 @@ import com.workers.wsusermanagement.bussines.service.validation.signup.SignUpVal
 import com.workers.wsusermanagement.persistence.mapper.OtpEntityMapper;
 import com.workers.wsusermanagement.persistence.repository.OtpEntityRepository;
 import com.workers.wsusermanagement.persistence.repository.UserProfileRepository;
+import com.workers.wsusermanagement.rest.outbound.process.notification.interfaces.WsNotificationServiceFeignClient;
 import com.workers.wsusermanagement.rest.outbound.process.reset.interfaces.ResetPasswordProcessFeignClient;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,6 +29,7 @@ public class ResetPasswordServiceImpl implements ResetPasswordService {
     private final OtpEntityRepository otpEntityRepository;
     private final SignUpValidationService validationService;
     private final ResetPasswordProcessFeignClient resetPasswordProcessFeignClient;
+    private final WsNotificationServiceFeignClient wsNotificationServiceFeignClient;
     private static final int OTP_LENGTH = 4;
 
     @Override
@@ -36,11 +38,11 @@ public class ResetPasswordServiceImpl implements ResetPasswordService {
                 .map(this::validateRequest)
                 .map(this::validateUniqueCustomer)
                 .map(this::deactivateUserProfile)
-                .map(resetPasswordProcessFeignClient::requestToResetPassword)
+                .map(resetPasswordProcessFeignClient::requestToExecuteByService)
                 .map(this::generateNewOtp)
                 .map(this::saveOtpByUserProfile)
                 .map(this::saveOtpByUserProfile)
-                // отправить отп
+                .map(wsNotificationServiceFeignClient::requestToExecuteByService)
                 .map(this::createResetPasswordResponse)
                 .orElseThrow(() -> new ResponseStatusException(BAD_REQUEST, "Не удалось сбросить пароль клиента"));
     }
@@ -78,5 +80,4 @@ public class ResetPasswordServiceImpl implements ResetPasswordService {
     private ResetPasswordResponse createResetPasswordResponse(ResetPasswordContext ctx) {
         return new ResetPasswordResponse(ctx.getResetPasswordRequest().phoneNumber(), "OK");
     }
-
 }

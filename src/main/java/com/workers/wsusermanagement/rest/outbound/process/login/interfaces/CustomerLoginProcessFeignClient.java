@@ -4,5 +4,5 @@ import com.workers.wsusermanagement.bussines.service.signin.context.SignInContex
 
 public interface CustomerLoginProcessFeignClient {
 
-    SignInContext requestToLoginCustomer(SignInContext ctx);
+    SignInContext requestToExecuteByService(SignInContext ctx);
 }

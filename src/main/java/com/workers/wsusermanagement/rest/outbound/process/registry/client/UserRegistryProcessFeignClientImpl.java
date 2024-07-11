@@ -1,10 +1,10 @@
-package com.workers.wsusermanagement.rest.outbound.process.reset.client;
+package com.workers.wsusermanagement.rest.outbound.process.registry.client;
 
-import com.workers.wsusermanagement.bussines.service.reset.context.ResetPasswordContext;
+import com.workers.wsusermanagement.bussines.service.signup.context.SignUpContext;
 import com.workers.wsusermanagement.rest.outbound.feign.WsAuthFeign;
 import com.workers.wsusermanagement.rest.outbound.mapper.AuthRequestMapper;
 import com.workers.wsusermanagement.rest.outbound.process.AbstractProcessFeignClient;
-import com.workers.wsusermanagement.rest.outbound.process.reset.interfaces.ResetPasswordProcessFeignClient;
+import com.workers.wsusermanagement.rest.outbound.process.registry.interfaces.UserRegistryProcessFeignClient;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -15,26 +15,26 @@ import static org.springframework.http.HttpStatus.BAD_REQUEST;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class ResetPasswordProcessFeignClientImpl
-        extends AbstractProcessFeignClient<ResetPasswordContext>
-        implements ResetPasswordProcessFeignClient {
+public class UserRegistryProcessFeignClientImpl
+        extends AbstractProcessFeignClient<SignUpContext>
+        implements UserRegistryProcessFeignClient {
 
     private final WsAuthFeign wsAuthFeign;
     private final AuthRequestMapper authRequestMapper;
 
     @Override
-    protected ResetPasswordContext mappingToRequest(ResetPasswordContext ctx) {
-        var authRequest = authRequestMapper.toAuthRequest(ctx.getResetPasswordRequest());
+    protected SignUpContext mappingToRequest(SignUpContext ctx) {
+        var authRequest = authRequestMapper.toAuthRequest(ctx.getSignUpRequest());
         ctx.setAuthRequest(authRequest);
         return ctx;
     }
 
     @Override
-    protected ResetPasswordContext doRequest(ResetPasswordContext ctx) {
+    protected SignUpContext doRequest(SignUpContext ctx) {
         var response = wsAuthFeign.registerCustomer(ctx.getAuthRequest());
         if (Boolean.TRUE.equals(response.getBody())) {
             return ctx;
         }
-        throw new ResponseStatusException(BAD_REQUEST, "Не удалось сбросить пароль пользователя");
+        throw new ResponseStatusException(BAD_REQUEST, "Не удалось зарегистрировать пользователя");
     }
 }

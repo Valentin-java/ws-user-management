@@ -4,48 +4,34 @@ import com.workers.wsusermanagement.bussines.service.signin.context.SignInContex
 import com.workers.wsusermanagement.bussines.service.signin.model.SignInResponse;
 import com.workers.wsusermanagement.rest.outbound.feign.WsAuthFeign;
 import com.workers.wsusermanagement.rest.outbound.mapper.AuthRequestMapper;
+import com.workers.wsusermanagement.rest.outbound.process.AbstractProcessFeignClient;
 import com.workers.wsusermanagement.rest.outbound.process.login.interfaces.CustomerLoginProcessFeignClient;
-import feign.FeignException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.Optional;
-
-import static com.workers.wsusermanagement.rest.outbound.util.CommonFeignUtil.extractSpecificMessage;
-import static com.workers.wsusermanagement.util.CommonConstant.UNEXPECTED_ERROR_MESSAGE;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class CustomerLoginProcessFeignClientImpl implements CustomerLoginProcessFeignClient {
+public class CustomerLoginProcessFeignClientImpl
+        extends AbstractProcessFeignClient<SignInContext>
+        implements CustomerLoginProcessFeignClient {
 
     private final WsAuthFeign wsAuthFeign;
     private final AuthRequestMapper authRequestMapper;
 
     @Override
-    public SignInContext requestToLoginCustomer(SignInContext ctx) {
-        log.debug("[requestToLoginCustomer] Start requestToLoginCustomer");
-        try {
-            return Optional.of(ctx)
-                    .map(this::mappingToAuthRequest)
-                    .map(this::doRequest)
-                    .orElseThrow(() -> new ResponseStatusException(BAD_REQUEST, UNEXPECTED_ERROR_MESSAGE));
-        } catch (FeignException e) {
-            throw new ResponseStatusException(HttpStatusCode.valueOf(e.status()), extractSpecificMessage(e));
-        }
-    }
-
-    private SignInContext mappingToAuthRequest(SignInContext ctx) {
+    protected SignInContext mappingToRequest(SignInContext ctx) {
         var authRequest = authRequestMapper.toAuthRequest(ctx.getSignInRequest());
         ctx.setAuthRequest(authRequest);
         return ctx;
     }
 
-    private SignInContext doRequest(SignInContext ctx) {
+    @Override
+    protected SignInContext doRequest(SignInContext ctx) {
         var response = wsAuthFeign.activationCustomer(ctx.getAuthRequest());
         if (response.getStatusCode().is2xxSuccessful()) {
             var responseBody = response.getBody() != null ? response.getBody() : null;

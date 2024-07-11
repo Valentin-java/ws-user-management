@@ -33,7 +33,7 @@ public class SignInServiceImpl implements SignInService {
                 .map(this::validateRequest)
                 .map(this::validateExistingCustomer)
                 .map(this::validateActivityCustomer)
-                .map(customerLoginProcessFeignClient::requestToLoginCustomer)
+                .map(customerLoginProcessFeignClient::requestToExecuteByService)
                 .map(this::updateVisitDate)
                 .orElseThrow(() -> new ResponseStatusException(BAD_REQUEST, UNEXPECTED_ERROR_MESSAGE));
     }

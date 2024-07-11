@@ -7,7 +7,9 @@ import com.workers.wsusermanagement.persistence.enums.ActivityStatus;
 import com.workers.wsusermanagement.persistence.mapper.CustomerMapper;
 import com.workers.wsusermanagement.persistence.repository.UserProfileRepository;
 import com.workers.wsusermanagement.bussines.service.signup.model.SignUpResponse;
-import com.workers.wsusermanagement.rest.outbound.process.registry.interfaces.CustomerRegistryProcessFeignClient;
+import com.workers.wsusermanagement.rest.outbound.process.activation.interfaces.UserActivationProcessFeignClient;
+import com.workers.wsusermanagement.rest.outbound.process.assignrole.interfaces.UserAssignRoleProcessFeignClient;
+import com.workers.wsusermanagement.rest.outbound.process.registry.interfaces.UserRegistryProcessFeignClient;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -23,7 +25,9 @@ import static org.springframework.http.HttpStatus.BAD_REQUEST;
 @RequiredArgsConstructor
 public class SignUpServiceImpl implements SignUpService {
 
-    private final CustomerRegistryProcessFeignClient customerRegistryProcessFeignClient;
+    private final UserRegistryProcessFeignClient userRegistryProcessFeignClient;
+    private final UserAssignRoleProcessFeignClient userAssignRoleProcessFeignClient;
+    private final UserActivationProcessFeignClient userActivationProcessFeignClient;
     private final UserProfileRepository userProfileRepository;
     private final SignUpValidationService validationService;
     private final CustomerMapper customerMapper;
@@ -33,10 +37,10 @@ public class SignUpServiceImpl implements SignUpService {
         return Optional.of(ctx)
                 .map(this::validateRequest)
                 .map(this::validateUniqueCustomer)
-                .map(customerRegistryProcessFeignClient::requestToRegistryCustomer)
+                .map(userRegistryProcessFeignClient::requestToExecuteByService)
                 .map(this::createCustomerProfile)
-                .map(customerRegistryProcessFeignClient::requestToAssignRole)
-                .map(customerRegistryProcessFeignClient::requestToActivationCustomer)
+                .map(userAssignRoleProcessFeignClient::requestToExecuteByService)
+                .map(userActivationProcessFeignClient::requestToExecuteByService)
                 .map(this::activationCustomerProfile)
                 .orElseThrow(() -> new ResponseStatusException(BAD_REQUEST, "Не удалось зарегистрировать клиента"));
     }

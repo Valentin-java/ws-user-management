@@ -4,5 +4,5 @@ import com.workers.wsusermanagement.bussines.service.reset.context.ResetPassword
 
 public interface WsNotificationServiceFeignClient {
 
-    ResetPasswordContext requestToSendOtp(ResetPasswordContext ctx);
+    ResetPasswordContext requestToExecuteByService(ResetPasswordContext ctx);
 }
