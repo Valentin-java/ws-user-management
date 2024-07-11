@@ -4,7 +4,7 @@ CREATE TABLE IF NOT EXISTS "ws_user_profile" (
     email VARCHAR(255),
     first_name VARCHAR(255),
     last_name VARCHAR(255),
-    activity_status VARCHAR(255),
+    activity_status VARCHAR(255) NOT NULL,
     customer_role VARCHAR(255),
     text_error VARCHAR(255),
     created_at TIMESTAMP,

@@ -25,7 +25,7 @@ public class RestorePasswordServiceImpl implements RestorePasswordService {
     private final ResetPasswordService resetPasswordService;
 
     /**
-     * Здесь все проверим и отправим отп
+     * Здесь все проверим, деактивируем пользователя, сбросим пароль и отправим отп для восстановления.
      * @param request
      * @return
      */
@@ -37,17 +37,32 @@ public class RestorePasswordServiceImpl implements RestorePasswordService {
                 .orElseThrow(() -> new ResponseStatusException(BAD_REQUEST, UNEXPECTED_ERROR_MESSAGE));
     }
 
+    /**
+     * Получим отп, проверим что именно такой отп именно этому пользователю отправляли, подтвердим, что все хорошо.
+     * У отп поменять статус на активный
+     *
+     * @param request
+     * @return
+     */
     @Override
     public ResetPasswordResponse getConfirmationOtp(SignUpRequest request) {
-        // восстановление пароля
-        // Здесь проверим введенный отп, и сбросим пароль в ws-auth
+        // Подтверждение отп -> смена статуса отп на активный
         return null;
     }
 
+    /**
+     * Здесь нужно проверить, что отп по которому ранее прошло потверждение имеет статус активный
+     * @param request
+     * @return
+     */
     @Override
     public ResetPasswordResponse setNewPassword(SignUpRequest request) {
         // восстановление пароля
-        // Здесь проверим введенный новый пароль и установим в ws-auth
+        // Получим отп
+        // Проверим что пользователь существует
+        // Проверим что данный отп принадлежит данному пользователю
+        // Проверим статус отп
+        // Если статус активный изменим пароль и установим в ws-auth
         // получим токен и отдадим
         return null;
     }
