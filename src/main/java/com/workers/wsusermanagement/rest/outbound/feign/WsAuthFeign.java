@@ -19,4 +19,7 @@ public interface WsAuthFeign {
 
     @PostMapping(value = "/workers/auth/activation")
     ResponseEntity<AuthResponse> activationCustomer(@RequestBody AuthRequest request);
+
+    @PostMapping(value = "/workers/auth/reset")
+    ResponseEntity<Boolean> requestToResetPassword(@RequestBody AuthRequest request);
 }

@@ -4,7 +4,6 @@ import com.workers.wsusermanagement.bussines.interfaces.CustomerAuthenticationSe
 import com.workers.wsusermanagement.bussines.service.signin.interfaces.SignInService;
 import com.workers.wsusermanagement.bussines.service.signup.context.SignUpContext;
 import com.workers.wsusermanagement.bussines.service.signup.interfaces.SignUpService;
-import com.workers.wsusermanagement.rest.inbound.dto.OtpRequest;
 import com.workers.wsusermanagement.rest.inbound.dto.UserSignUpRequest;
 import com.workers.wsusermanagement.rest.inbound.mapper.SignInMapper;
 import com.workers.wsusermanagement.rest.inbound.mapper.SignUpMapper;
@@ -26,14 +25,6 @@ public class CustomerAuthenticationServiceImpl extends AbstractUserAuthenticatio
     @Override
     protected SignUpContext mapToSignUpContext(UserSignUpRequest request) {
         return signUpMapper.toRegistryCustomerContext(request);
-    }
-
-    public void validateOtp(OtpRequest request) {
-        // Потом надо будет ворваться в процесс signUp с валиадцией по отп
-
-        // по номеру телефона ищем пользователя - номер отдается после отправки сообщения signingUp
-        // берем его отп и сравниваем
-        // получаем токен - отдаем кленту
     }
 
 

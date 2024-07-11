@@ -13,6 +13,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Optional;
 
+import static com.workers.wsusermanagement.rest.outbound.util.CommonFeignUtil.extractSpecificMessage;
 import static com.workers.wsusermanagement.util.CommonConstant.UNEXPECTED_ERROR_MESSAGE;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
@@ -49,14 +50,6 @@ public class CustomerRegistryProcessFeignClientImpl implements CustomerRegistryP
             return ctx;
         }
         throw new ResponseStatusException(BAD_REQUEST, "Не удалось зарегистрировать пользователя");
-    }
-
-    private String extractSpecificMessage(FeignException e) {
-        return e.getMessage()
-                .split(":")[3]
-                .replaceAll("\\[", "")
-                .replaceAll("\\]", "")
-                .trim();
     }
 
     @Override

@@ -1,10 +1,11 @@
-package com.workers.wsusermanagement.rest.outbound.process.login.client;
+package com.workers.wsusermanagement.rest.outbound.process.reset.client;
 
+import com.workers.wsusermanagement.bussines.service.reset.context.ResetPasswordContext;
 import com.workers.wsusermanagement.bussines.service.signin.context.SignInContext;
 import com.workers.wsusermanagement.bussines.service.signin.model.SignInResponse;
 import com.workers.wsusermanagement.rest.outbound.feign.WsAuthFeign;
 import com.workers.wsusermanagement.rest.outbound.mapper.AuthRequestMapper;
-import com.workers.wsusermanagement.rest.outbound.process.login.interfaces.CustomerLoginProcessFeignClient;
+import com.workers.wsusermanagement.rest.outbound.process.reset.interfaces.ResetPasswordProcessFeignClient;
 import feign.FeignException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,39 +22,35 @@ import static org.springframework.http.HttpStatus.BAD_REQUEST;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class CustomerLoginProcessFeignClientImpl implements CustomerLoginProcessFeignClient {
+public class ResetPasswordProcessFeignClientImpl implements ResetPasswordProcessFeignClient {
 
     private final WsAuthFeign wsAuthFeign;
     private final AuthRequestMapper authRequestMapper;
 
     @Override
-    public SignInContext requestToLoginCustomer(SignInContext ctx) {
+    public ResetPasswordContext requestToResetPassword(ResetPasswordContext ctx) {
         log.debug("[requestToLoginCustomer] Start requestToLoginCustomer");
         try {
             return Optional.of(ctx)
                     .map(this::mappingToAuthRequest)
-                    .map(this::doRequestToRegistry)
+                    .map(this::doRequestToResetPassword)
                     .orElseThrow(() -> new ResponseStatusException(BAD_REQUEST, UNEXPECTED_ERROR_MESSAGE));
         } catch (FeignException e) {
             throw new ResponseStatusException(HttpStatusCode.valueOf(e.status()), extractSpecificMessage(e));
         }
     }
 
-    private SignInContext mappingToAuthRequest(SignInContext ctx) {
-        var authRequest = authRequestMapper.toAuthRequest(ctx.getSignInRequest());
+    private ResetPasswordContext mappingToAuthRequest(ResetPasswordContext ctx) {
+        var authRequest = authRequestMapper.toAuthRequest(ctx.getResetPasswordRequest());
         ctx.setAuthRequest(authRequest);
         return ctx;
     }
 
-    private SignInContext doRequestToRegistry(SignInContext ctx) {
-        var response = wsAuthFeign.activationCustomer(ctx.getAuthRequest());
-        if (response.getStatusCode().is2xxSuccessful()) {
-            var responseBody = response.getBody() != null ? response.getBody() : null;
-            var accessToken = responseBody.accessToken();
-            var refreshToken = responseBody.refreshToken();
-            var signInResponse = new SignInResponse(ctx.getSignInRequest().phoneNumber(), accessToken, refreshToken);
-            return ctx.setSignInResponse(signInResponse);
+    private ResetPasswordContext doRequestToResetPassword(ResetPasswordContext ctx) {
+        var response = wsAuthFeign.registerCustomer(ctx.getAuthRequest());
+        if (Boolean.TRUE.equals(response.getBody())) {
+            return ctx;
         }
-        throw new ResponseStatusException(BAD_REQUEST, "Не удалось залогинить пользователя");
+        throw new ResponseStatusException(BAD_REQUEST, "Не удалось сбросить пароль пользователя");
     }
 }

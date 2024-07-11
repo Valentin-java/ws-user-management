@@ -42,3 +42,5 @@ auth:
 feign:
   ws-auth:
     url: http://localhost:8761
+  ws-notification:
+    url: http://localhost:876
