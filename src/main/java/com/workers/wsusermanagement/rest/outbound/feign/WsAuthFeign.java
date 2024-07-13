@@ -22,4 +22,7 @@ public interface WsAuthFeign {
 
     @PostMapping(value = "/workers/auth/reset")
     ResponseEntity<Boolean> requestToResetPassword(@RequestBody AuthRequest request);
+
+    @PostMapping(value = "/workers/auth/changepass")
+    ResponseEntity<Boolean> requestToChangePassword(@RequestBody AuthRequest request);
 }

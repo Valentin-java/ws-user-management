@@ -4,14 +4,17 @@ import com.workers.wsusermanagement.bussines.service.confirmotp.context.Confirma
 import com.workers.wsusermanagement.bussines.service.confirmotp.interfaces.ConfirmationOtpService;
 import com.workers.wsusermanagement.bussines.service.reset.model.ResetPasswordResponse;
 import com.workers.wsusermanagement.bussines.service.validation.signup.SignUpValidationService;
+import com.workers.wsusermanagement.persistence.entity.OtpEntity;
 import com.workers.wsusermanagement.persistence.enums.ActivityStatus;
 import com.workers.wsusermanagement.persistence.repository.OtpEntityRepository;
 import com.workers.wsusermanagement.persistence.repository.UserProfileRepository;
+import com.workers.wsusermanagement.rest.outbound.process.reset.interfaces.ResetPasswordProcessFeignClient;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.Comparator;
 import java.util.Optional;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
@@ -24,15 +27,18 @@ public class ConfirmationOtpServiceImpl implements ConfirmationOtpService {
     private final UserProfileRepository userProfileRepository;
     private final OtpEntityRepository otpEntityRepository;
     private final SignUpValidationService validationService;
+    private final ResetPasswordProcessFeignClient resetPasswordProcessFeignClient;
 
     @Override
     public ResetPasswordResponse confirmOtpProcess(ConfirmationOtpContext ctx) {
         return Optional.of(ctx)
                 .map(this::validateRequest)
                 .map(this::validateExistingCustomer)
-                .map(this::validateExistingOtp)
-                .map(this::validateActivityStatusOtp)
+                .map(this::validateActivityProfileStatus)
+                .map(this::findLatestInactiveOtp)
+                .map(this::compareOtp)
                 .map(this::activateOtp)
+                .map(resetPasswordProcessFeignClient::requestToExecuteByService)
                 .map(this::createResetPasswordResponse)
                 .orElseThrow(() -> new ResponseStatusException(BAD_REQUEST, "Не удалось сбросить пароль клиента"));
     }
@@ -49,18 +55,31 @@ public class ConfirmationOtpServiceImpl implements ConfirmationOtpService {
         return ctx;
     }
 
-    private ConfirmationOtpContext validateExistingOtp(ConfirmationOtpContext ctx) {
-        var otpEntity = otpEntityRepository.findByUsername(ctx.getOtpRequest().phoneNumber())
+    private ConfirmationOtpContext validateActivityProfileStatus(ConfirmationOtpContext ctx) {
+        if (ActivityStatus.INACTIVE.equals(ctx.getUserProfile().getActivityStatus())) {
+            return ctx;
+        }
+        throw new ResponseStatusException(BAD_REQUEST, "Отп применяется для активного профиля");
+    }
+
+    private ConfirmationOtpContext findLatestInactiveOtp(ConfirmationOtpContext ctx) {
+        OtpEntity otpEntity = otpEntityRepository.findAllByUsername(ctx.getOtpRequest().phoneNumber()).stream()
+                .filter(e -> ActivityStatus.INACTIVE.equals(e.getActivityStatus()))
+                .sorted(Comparator.comparing(OtpEntity::getCreatedAt).reversed())
+                .findFirst()
                 .orElseThrow(() -> new ResponseStatusException(BAD_REQUEST, "Одноразовый пароль в системе не существует"));
+
         ctx.setOtpEntity(otpEntity);
         return ctx;
     }
 
-    private ConfirmationOtpContext validateActivityStatusOtp(ConfirmationOtpContext ctx) {
-        if (!ActivityStatus.ACTIVE.equals(ctx.getOtpEntity().getActivityStatus())) {
-            throw new ResponseStatusException(BAD_REQUEST, "Одноразовый пароль уже использован");
+    private ConfirmationOtpContext compareOtp(ConfirmationOtpContext ctx) {
+        String otpEntity = ctx.getOtpEntity().getOtp();
+        String otpEntered = ctx.getOtpRequest().otp();
+        if (otpEntity.equals(otpEntered)) {
+            return ctx;
         }
-        return ctx;
+        throw new ResponseStatusException(BAD_REQUEST, "Отп не верный");
     }
 
     private ConfirmationOtpContext activateOtp(ConfirmationOtpContext ctx) {

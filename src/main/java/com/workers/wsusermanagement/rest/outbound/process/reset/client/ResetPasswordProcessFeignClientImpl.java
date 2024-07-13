@@ -1,5 +1,6 @@
 package com.workers.wsusermanagement.rest.outbound.process.reset.client;
 
+import com.workers.wsusermanagement.bussines.service.confirmotp.context.ConfirmationOtpContext;
 import com.workers.wsusermanagement.bussines.service.reset.context.ResetPasswordContext;
 import com.workers.wsusermanagement.rest.outbound.feign.WsAuthFeign;
 import com.workers.wsusermanagement.rest.outbound.mapper.AuthRequestMapper;
@@ -16,21 +17,21 @@ import static org.springframework.http.HttpStatus.BAD_REQUEST;
 @Component
 @RequiredArgsConstructor
 public class ResetPasswordProcessFeignClientImpl
-        extends AbstractProcessFeignClient<ResetPasswordContext>
+        extends AbstractProcessFeignClient<ConfirmationOtpContext>
         implements ResetPasswordProcessFeignClient {
 
     private final WsAuthFeign wsAuthFeign;
     private final AuthRequestMapper authRequestMapper;
 
     @Override
-    protected ResetPasswordContext mappingToRequest(ResetPasswordContext ctx) {
+    protected ConfirmationOtpContext mappingToRequest(ConfirmationOtpContext ctx) {
         var authRequest = authRequestMapper.toAuthRequest(ctx.getResetPasswordRequest());
         ctx.setAuthRequest(authRequest);
         return ctx;
     }
 
     @Override
-    protected ResetPasswordContext doRequest(ResetPasswordContext ctx) {
+    protected ConfirmationOtpContext doRequest(ConfirmationOtpContext ctx) {
         var response = wsAuthFeign.registerCustomer(ctx.getAuthRequest());
         if (Boolean.TRUE.equals(response.getBody())) {
             return ctx;

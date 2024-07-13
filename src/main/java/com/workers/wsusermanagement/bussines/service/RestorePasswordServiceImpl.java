@@ -4,9 +4,10 @@ import com.workers.wsusermanagement.bussines.interfaces.RestorePasswordService;
 import com.workers.wsusermanagement.bussines.service.confirmotp.interfaces.ConfirmationOtpService;
 import com.workers.wsusermanagement.bussines.service.reset.interfaces.ResetPasswordService;
 import com.workers.wsusermanagement.bussines.service.reset.model.ResetPasswordResponse;
-import com.workers.wsusermanagement.bussines.service.signup.model.SignUpRequest;
+import com.workers.wsusermanagement.bussines.service.signin.model.SignInResponse;
 import com.workers.wsusermanagement.rest.inbound.dto.OtpRequest;
 import com.workers.wsusermanagement.rest.inbound.dto.ResetUserPasswordRequest;
+import com.workers.wsusermanagement.rest.inbound.dto.UserSignUpRequest;
 import com.workers.wsusermanagement.rest.inbound.mapper.ConfirmationOtpMapper;
 import com.workers.wsusermanagement.rest.inbound.mapper.ResetPasswordMapper;
 import lombok.RequiredArgsConstructor;
@@ -59,17 +60,18 @@ public class RestorePasswordServiceImpl implements RestorePasswordService {
 
     /**
      * Здесь нужно проверить, что отп по которому ранее прошло потверждение имеет статус активный
+     * и сам пользователь НЕ активный
      * @param request
      * @return
      */
     @Override
-    public ResetPasswordResponse setNewPassword(SignUpRequest request) {
-        // восстановление пароля
-        // Получим отп
-        // Проверим что пользователь существует
-        // Проверим что данный отп принадлежит данному пользователю
-        // Проверим статус отп
-        // Если статус активный изменим пароль и установим в ws-auth
+    public SignInResponse setPasswordByOtp(UserSignUpRequest request) {
+
+
+        // Назначим новый пароль, если на данный пользователь:
+        // - Существует/Не активный/На данного пользователя есть отп пароль с активным статусом
+        //  изменим пароль и установим в ws-auth
+        // сделаем логин, отдадим токен
         // получим токен и отдадим
         return null;
     }

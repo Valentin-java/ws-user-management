@@ -1,9 +1,10 @@
 package com.workers.wsusermanagement.bussines.interfaces;
 
 import com.workers.wsusermanagement.bussines.service.reset.model.ResetPasswordResponse;
-import com.workers.wsusermanagement.bussines.service.signup.model.SignUpRequest;
+import com.workers.wsusermanagement.bussines.service.signin.model.SignInResponse;
 import com.workers.wsusermanagement.rest.inbound.dto.OtpRequest;
 import com.workers.wsusermanagement.rest.inbound.dto.ResetUserPasswordRequest;
+import com.workers.wsusermanagement.rest.inbound.dto.UserSignUpRequest;
 
 public interface RestorePasswordService {
 
@@ -11,5 +12,5 @@ public interface RestorePasswordService {
 
     ResetPasswordResponse getConfirmationOtp(OtpRequest request);
 
-    ResetPasswordResponse setNewPassword(SignUpRequest request);
+    SignInResponse setPasswordByOtp(UserSignUpRequest request);
 }
