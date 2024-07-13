@@ -74,9 +74,9 @@ public class ConfirmationOtpServiceImpl implements ConfirmationOtpService {
     }
 
     private ConfirmationOtpContext compareOtp(ConfirmationOtpContext ctx) {
-        String otpEntity = ctx.getOtpEntity().getOtp();
-        String otpEntered = ctx.getOtpRequest().otp();
-        if (otpEntity.equals(otpEntered)) {
+        String actualOtp = ctx.getOtpEntity().getOtp();
+        String enteredOtp = ctx.getOtpRequest().otp();
+        if (actualOtp.equals(enteredOtp)) {
             return ctx;
         }
         throw new ResponseStatusException(BAD_REQUEST, "Отп не верный");
