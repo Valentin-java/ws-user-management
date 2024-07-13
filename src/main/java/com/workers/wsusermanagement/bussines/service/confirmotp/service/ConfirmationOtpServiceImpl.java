@@ -65,8 +65,7 @@ public class ConfirmationOtpServiceImpl implements ConfirmationOtpService {
     private ConfirmationOtpContext findLatestInactiveOtp(ConfirmationOtpContext ctx) {
         OtpEntity otpEntity = otpEntityRepository.findAllByUsername(ctx.getOtpRequest().phoneNumber()).stream()
                 .filter(e -> ActivityStatus.INACTIVE.equals(e.getActivityStatus()))
-                .sorted(Comparator.comparing(OtpEntity::getCreatedAt).reversed())
-                .findFirst()
+                .max(Comparator.comparing(OtpEntity::getCreatedAt))
                 .orElseThrow(() -> new ResponseStatusException(BAD_REQUEST, "Одноразовый пароль в системе не существует"));
 
         ctx.setOtpEntity(otpEntity);
