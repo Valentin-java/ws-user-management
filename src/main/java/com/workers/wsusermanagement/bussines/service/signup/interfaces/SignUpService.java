@@ -5,5 +5,5 @@ import com.workers.wsusermanagement.bussines.service.signup.model.SignUpResponse
 
 public interface SignUpService {
 
-    SignUpResponse signUpProcess(SignUpContext request);
+    SignUpResponse doProcess(SignUpContext request);
 }

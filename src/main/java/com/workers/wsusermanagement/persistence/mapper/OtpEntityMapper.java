@@ -1,6 +1,6 @@
 package com.workers.wsusermanagement.persistence.mapper;
 
-import com.workers.wsusermanagement.bussines.service.reset.context.ResetPasswordContext;
+import com.workers.wsusermanagement.bussines.service.resetpass.context.ResetPasswordContext;
 import com.workers.wsusermanagement.config.mapper.MapperConfiguration;
 import com.workers.wsusermanagement.persistence.entity.OtpEntity;
 import com.workers.wsusermanagement.persistence.enums.TypeOtp;
@@ -14,7 +14,7 @@ public interface OtpEntityMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "otp", source = "otp")
     @Mapping(target = "username", source = "userProfile.username")
-    @Mapping(target = "activityStatus", source = "resetPasswordRequest.activityStatus")
+    @Mapping(target = "activityStatus", source = "request.activityStatus")
     @Mapping(target = "typeOtp", source = ".", qualifiedByName = "getTypeOtp")
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)

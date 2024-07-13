@@ -10,7 +10,7 @@ import lombok.experimental.Accessors;
 @Data
 @Accessors(chain = true)
 public class SignInContext {
-    private SignInRequest signInRequest;
+    private SignInRequest request;
     private AuthRequest authRequest;
     private SignInResponse signInResponse;
     private UserProfile userProfile;

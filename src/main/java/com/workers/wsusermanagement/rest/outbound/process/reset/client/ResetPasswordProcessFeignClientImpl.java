@@ -1,7 +1,6 @@
 package com.workers.wsusermanagement.rest.outbound.process.reset.client;
 
 import com.workers.wsusermanagement.bussines.service.confirmotp.context.ConfirmationOtpContext;
-import com.workers.wsusermanagement.bussines.service.reset.context.ResetPasswordContext;
 import com.workers.wsusermanagement.rest.outbound.feign.WsAuthFeign;
 import com.workers.wsusermanagement.rest.outbound.mapper.AuthRequestMapper;
 import com.workers.wsusermanagement.rest.outbound.process.AbstractProcessFeignClient;
@@ -25,7 +24,7 @@ public class ResetPasswordProcessFeignClientImpl
 
     @Override
     protected ConfirmationOtpContext mappingToRequest(ConfirmationOtpContext ctx) {
-        var authRequest = authRequestMapper.toAuthRequest(ctx.getResetPasswordRequest());
+        var authRequest = authRequestMapper.toAuthRequest(ctx.getRequest());
         ctx.setAuthRequest(authRequest);
         return ctx;
     }

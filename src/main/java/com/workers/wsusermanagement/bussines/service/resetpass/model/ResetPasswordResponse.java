@@ -1,4 +1,4 @@
-package com.workers.wsusermanagement.bussines.service.reset.model;
+package com.workers.wsusermanagement.bussines.service.resetpass.model;
 
 public record ResetPasswordResponse(
         String phoneNumber,

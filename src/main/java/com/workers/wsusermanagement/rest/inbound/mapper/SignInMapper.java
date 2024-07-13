@@ -9,8 +9,8 @@ import org.mapstruct.Mapping;
 @Mapper(config = MapperConfiguration.class)
 public interface SignInMapper {
 
-    @Mapping(target = "signInRequest.phoneNumber", source = "phoneNumber")
-    @Mapping(target = "signInRequest.password", source = "password")
+    @Mapping(target = "request.phoneNumber", source = "phoneNumber")
+    @Mapping(target = "request.password", source = "password")
     @Mapping(target = "authRequest", ignore = true)
     @Mapping(target = "signInResponse", ignore = true)
     @Mapping(target = "userProfile", ignore = true)

@@ -12,18 +12,18 @@ import org.mapstruct.Named;
 @Mapper(config = MapperConfiguration.class)
 public interface SignUpMapper {
 
-    @Mapping(target = "signUpRequest.phoneNumber", source = "phoneNumber")
-    @Mapping(target = "signUpRequest.password", source = "password")
-    @Mapping(target = "signUpRequest.activityStatus", source = ".", qualifiedByName = "getActivityStatus")
-    @Mapping(target = "signUpRequest.customerRole", source = ".", qualifiedByName = "getCustomerRole")
+    @Mapping(target = "request.phoneNumber", source = "phoneNumber")
+    @Mapping(target = "request.password", source = "password")
+    @Mapping(target = "request.activityStatus", source = ".", qualifiedByName = "getActivityStatus")
+    @Mapping(target = "request.customerRole", source = ".", qualifiedByName = "getCustomerRole")
     @Mapping(target = "authRequest", ignore = true)
     @Mapping(target = "assignRoleRequest", ignore = true)
     SignUpContext toCustomerServiceContext(UserSignUpRequest request);
 
-    @Mapping(target = "signUpRequest.phoneNumber", source = "phoneNumber")
-    @Mapping(target = "signUpRequest.password", source = "password")
-    @Mapping(target = "signUpRequest.activityStatus", source = ".", qualifiedByName = "getActivityStatus")
-    @Mapping(target = "signUpRequest.customerRole", source = ".", qualifiedByName = "getHandymanRole")
+    @Mapping(target = "request.phoneNumber", source = "phoneNumber")
+    @Mapping(target = "request.password", source = "password")
+    @Mapping(target = "request.activityStatus", source = ".", qualifiedByName = "getActivityStatus")
+    @Mapping(target = "request.customerRole", source = ".", qualifiedByName = "getHandymanRole")
     @Mapping(target = "authRequest", ignore = true)
     @Mapping(target = "assignRoleRequest", ignore = true)
     SignUpContext toHandymanServiceContext(UserSignUpRequest request);

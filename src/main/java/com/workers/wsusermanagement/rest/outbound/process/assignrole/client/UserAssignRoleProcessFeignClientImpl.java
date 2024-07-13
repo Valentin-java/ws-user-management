@@ -24,7 +24,7 @@ public class UserAssignRoleProcessFeignClientImpl
 
     @Override
     protected SignUpContext mappingToRequest(SignUpContext ctx) {
-        var authRequest = authRequestMapper.toAssignRoleRequest(ctx.getSignUpRequest());
+        var authRequest = authRequestMapper.toAssignRoleRequest(ctx.getRequest());
         ctx.setAssignRoleRequest(authRequest);
         return ctx;
     }

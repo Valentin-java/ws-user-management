@@ -5,5 +5,5 @@ import com.workers.wsusermanagement.bussines.service.signin.model.SignInResponse
 
 public interface SignInService {
 
-    SignInResponse signInProcess(SignInContext ctx);
+    SignInResponse doProcess(SignInContext ctx);
 }

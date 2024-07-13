@@ -32,52 +32,64 @@ public class SignInServiceImpl implements SignInService {
     private final OtpEntityRepository otpEntityRepository;
 
     @Override
-    public SignInResponse signInProcess(SignInContext ctx) {
+    public SignInResponse doProcess(SignInContext ctx) {
         return Optional.of(ctx)
                 .map(this::validateRequest)
                 .map(this::validateExistingCustomer)
-                .map(this::validateActivityCustomer)
+                .map(this::validateBlockedStatus)
+                .map(this::validateActiveStatus)
                 .map(this::whenHasInactiveOtpByUser)
                 .map(customerLoginProcessFeignClient::requestToExecuteByService)
                 .map(this::updateVisitDate)
+                .map(this::createResponse)
                 .orElseThrow(() -> new ResponseStatusException(BAD_REQUEST, UNEXPECTED_ERROR_MESSAGE));
     }
 
     private SignInContext validateRequest(SignInContext ctx) {
-        validationService.validate(ctx.getSignInRequest());
+        validationService.validate(ctx.getRequest());
         return ctx;
     }
 
     private SignInContext validateExistingCustomer(SignInContext ctx) {
-        var userProfile = userProfileRepository.findByUsername(ctx.getSignInRequest().phoneNumber())
+        var userProfile = userProfileRepository.findByUsername(ctx.getRequest().phoneNumber())
                 .orElseThrow(() -> new ResponseStatusException(BAD_REQUEST, "Пользователя в системе не существует"));
 
         return ctx.setUserProfile(userProfile);
     }
 
-    private SignInContext validateActivityCustomer(SignInContext ctx) {
-        if (!ActivityStatus.INACTIVE.equals(ctx.getUserProfile().getActivityStatus())) {
+    private SignInContext validateBlockedStatus(SignInContext ctx) {
+        if (ActivityStatus.BLOCKED_TO_RESET.equals(ctx.getUserProfile().getActivityStatus())) {
             return ctx;
         }
 
-        throw new ResponseStatusException(BAD_REQUEST, "Пользователь в системе еще не активен");
+        throw new ResponseStatusException(BAD_REQUEST, "Пользователь заблокирован по попыткам сброса пароля");
+    }
+
+    private SignInContext validateActiveStatus(SignInContext ctx) {
+        if (ActivityStatus.ACTIVE.equals(ctx.getUserProfile().getActivityStatus())) {
+            return ctx;
+        }
+
+        throw new ResponseStatusException(BAD_REQUEST, "Пользователь в системе не активен");
     }
 
     private SignInContext whenHasInactiveOtpByUser(SignInContext ctx) {
-        List<OtpEntity> otpList = otpEntityRepository.findAllByUsername(ctx.getSignInRequest().phoneNumber());
+        List<OtpEntity> otpList = otpEntityRepository.findAllByUsername(ctx.getRequest().phoneNumber());
 
-        otpList.stream()
-                .filter(e -> ActivityStatus.INACTIVE.equals(e.getActivityStatus()))
-                .forEach(e -> e.setActivityStatus(ActivityStatus.ACTIVE));
+        otpList.forEach(e -> e.setActivityStatus(ActivityStatus.NO_ACTUAL));
 
         otpEntityRepository.saveAll(otpList);
         return ctx;
     }
 
-    private SignInResponse updateVisitDate(SignInContext ctx) {
+    private SignInContext updateVisitDate(SignInContext ctx) {
         var userProfile = ctx.getUserProfile();
         userProfile.setLastVisitAt(LocalDateTime.now());
         userProfileRepository.save(userProfile);
+        return ctx;
+    }
+
+    private SignInResponse createResponse(SignInContext ctx) {
         return ctx.getSignInResponse();
     }
 }

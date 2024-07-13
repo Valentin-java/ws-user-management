@@ -30,14 +30,14 @@ public abstract class AbstractUserAuthenticationService {
     public SignUpResponse signUp(UserSignUpRequest request) {
         return Optional.of(request)
                 .map(this::mapToSignUpContext)
-                .map(signUpService::signUpProcess)
+                .map(signUpService::doProcess)
                 .orElseThrow(() -> new ResponseStatusException(BAD_REQUEST, UNEXPECTED_ERROR_MESSAGE));
     }
 
     public SignInResponse signIn(UserSignInRequest request) {
         return Optional.of(request)
                 .map(signInMapper::toServiceContext)
-                .map(signInService::signInProcess)
+                .map(signInService::doProcess)
                 .orElseThrow(() -> new ResponseStatusException(BAD_REQUEST, UNEXPECTED_ERROR_MESSAGE));
     }
 

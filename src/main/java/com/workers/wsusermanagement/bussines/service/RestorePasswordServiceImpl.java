@@ -2,12 +2,14 @@ package com.workers.wsusermanagement.bussines.service;
 
 import com.workers.wsusermanagement.bussines.interfaces.RestorePasswordService;
 import com.workers.wsusermanagement.bussines.service.confirmotp.interfaces.ConfirmationOtpService;
-import com.workers.wsusermanagement.bussines.service.reset.interfaces.ResetPasswordService;
-import com.workers.wsusermanagement.bussines.service.reset.model.ResetPasswordResponse;
+import com.workers.wsusermanagement.bussines.service.resetpass.interfaces.ResetPasswordService;
+import com.workers.wsusermanagement.bussines.service.resetpass.model.ResetPasswordResponse;
+import com.workers.wsusermanagement.bussines.service.setpass.interfaces.ChangePasswordService;
 import com.workers.wsusermanagement.bussines.service.signin.model.SignInResponse;
 import com.workers.wsusermanagement.rest.inbound.dto.OtpRequest;
 import com.workers.wsusermanagement.rest.inbound.dto.ResetUserPasswordRequest;
 import com.workers.wsusermanagement.rest.inbound.dto.UserSignUpRequest;
+import com.workers.wsusermanagement.rest.inbound.mapper.ChangePasswordMapper;
 import com.workers.wsusermanagement.rest.inbound.mapper.ConfirmationOtpMapper;
 import com.workers.wsusermanagement.rest.inbound.mapper.ResetPasswordMapper;
 import lombok.RequiredArgsConstructor;
@@ -27,8 +29,10 @@ public class RestorePasswordServiceImpl implements RestorePasswordService {
 
     private final ResetPasswordMapper resetPasswordMapper;
     private final ConfirmationOtpMapper confirmationOtpMapper;
+    private final ChangePasswordMapper changePasswordMapper;
     private final ResetPasswordService resetPasswordService;
     private final ConfirmationOtpService confirmationOtpService;
+    private final ChangePasswordService changePasswordService;
 
     /**
      * Здесь все проверим, деактивируем пользователя, сбросим пароль и отправим отп для восстановления.
@@ -39,7 +43,7 @@ public class RestorePasswordServiceImpl implements RestorePasswordService {
     public ResetPasswordResponse resetPasswordByOtp(ResetUserPasswordRequest request) {
         return Optional.of(request)
                 .map(resetPasswordMapper::toServiceContext)
-                .map(resetPasswordService::resetPasswordProcess)
+                .map(resetPasswordService::doProcess)
                 .orElseThrow(() -> new ResponseStatusException(BAD_REQUEST, UNEXPECTED_ERROR_MESSAGE));
     }
 
@@ -54,7 +58,7 @@ public class RestorePasswordServiceImpl implements RestorePasswordService {
     public ResetPasswordResponse getConfirmationOtp(OtpRequest request) {
         return Optional.of(request)
                 .map(confirmationOtpMapper::toServiceContext)
-                .map(confirmationOtpService::confirmOtpProcess)
+                .map(confirmationOtpService::doProcess)
                 .orElseThrow(() -> new ResponseStatusException(BAD_REQUEST, UNEXPECTED_ERROR_MESSAGE));
     }
 
@@ -66,13 +70,11 @@ public class RestorePasswordServiceImpl implements RestorePasswordService {
      */
     @Override
     public SignInResponse setPasswordByOtp(UserSignUpRequest request) {
-
-
-        // Назначим новый пароль, если на данный пользователь:
-        // - Существует/Не активный/На данного пользователя есть отп пароль с активным статусом
-        //  изменим пароль и установим в ws-auth
-        // сделаем логин, отдадим токен
-        // получим токен и отдадим
-        return null;
+        return Optional.of(request)
+                .map(changePasswordMapper::toServiceContext)
+                .map(changePasswordService::doProcess)
+                .orElseThrow(() -> new ResponseStatusException(BAD_REQUEST, UNEXPECTED_ERROR_MESSAGE));
     }
+
+    // blocked статус поставить на шедулер на 24 часа
 }

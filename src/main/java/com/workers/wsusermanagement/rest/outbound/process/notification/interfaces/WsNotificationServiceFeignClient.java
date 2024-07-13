@@ -1,6 +1,6 @@
 package com.workers.wsusermanagement.rest.outbound.process.notification.interfaces;
 
-import com.workers.wsusermanagement.bussines.service.reset.context.ResetPasswordContext;
+import com.workers.wsusermanagement.bussines.service.resetpass.context.ResetPasswordContext;
 
 public interface WsNotificationServiceFeignClient {
 

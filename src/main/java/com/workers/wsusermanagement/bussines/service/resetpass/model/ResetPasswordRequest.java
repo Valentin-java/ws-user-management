@@ -1,4 +1,4 @@
-package com.workers.wsusermanagement.bussines.service.reset.model;
+package com.workers.wsusermanagement.bussines.service.resetpass.model;
 
 import com.workers.wsusermanagement.bussines.service.common.model.SignRequest;
 import com.workers.wsusermanagement.persistence.enums.ActivityStatus;
