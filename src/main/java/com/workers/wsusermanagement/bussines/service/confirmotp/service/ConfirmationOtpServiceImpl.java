@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Comparator;
+import java.util.List;
 import java.util.Optional;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
@@ -28,12 +29,15 @@ public class ConfirmationOtpServiceImpl implements ConfirmationOtpService {
     private final OtpEntityRepository otpEntityRepository;
     private final SignUpValidationService validationService;
     private final ResetPasswordProcessFeignClient resetPasswordProcessFeignClient;
+    private static final int EXCEED_TIMES = 2;
 
     @Override
     public ResetPasswordResponse confirmOtpProcess(ConfirmationOtpContext ctx) {
         return Optional.of(ctx)
                 .map(this::validateRequest)
                 .map(this::validateExistingCustomer)
+                .map(this::validateExceedTimesToReset)
+                .map(this::validateBlockedStatus)
                 .map(this::validateActivityProfileStatus)
                 .map(this::findLatestInactiveOtp)
                 .map(this::compareOtp)
@@ -52,6 +56,22 @@ public class ConfirmationOtpServiceImpl implements ConfirmationOtpService {
         var userProfile = userProfileRepository.findByUsername(ctx.getOtpRequest().phoneNumber())
                 .orElseThrow(() -> new ResponseStatusException(BAD_REQUEST, "Пользователь в системе не существует"));
         ctx.setUserProfile(userProfile);
+        return ctx;
+    }
+
+    private ConfirmationOtpContext validateExceedTimesToReset(ConfirmationOtpContext ctx) {
+        List<OtpEntity> otpList = otpEntityRepository.findAllByUsername(ctx.getResetPasswordRequest().password());
+        if (otpList.size() > EXCEED_TIMES) {
+            ctx.getUserProfile().setActivityStatus(ActivityStatus.BLOCKED_TO_RESET);
+            userProfileRepository.save(ctx.getUserProfile());
+        }
+        return ctx;
+    }
+
+    private ConfirmationOtpContext validateBlockedStatus(ConfirmationOtpContext ctx) {
+        if (ActivityStatus.BLOCKED_TO_RESET.equals(ctx.getUserProfile().getActivityStatus())) {
+            throw new ResponseStatusException(BAD_REQUEST, "Профиль заблокирован для сброса пароля");
+        }
         return ctx;
     }
 
