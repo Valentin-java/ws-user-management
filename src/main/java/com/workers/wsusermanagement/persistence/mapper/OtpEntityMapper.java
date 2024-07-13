@@ -3,8 +3,10 @@ package com.workers.wsusermanagement.persistence.mapper;
 import com.workers.wsusermanagement.bussines.service.reset.context.ResetPasswordContext;
 import com.workers.wsusermanagement.config.mapper.MapperConfiguration;
 import com.workers.wsusermanagement.persistence.entity.OtpEntity;
+import com.workers.wsusermanagement.persistence.enums.TypeOtp;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.Named;
 
 @Mapper(config = MapperConfiguration.class)
 public interface OtpEntityMapper {
@@ -13,7 +15,13 @@ public interface OtpEntityMapper {
     @Mapping(target = "otp", source = "otp")
     @Mapping(target = "username", source = "userProfile.username")
     @Mapping(target = "activityStatus", source = "resetPasswordRequest.activityStatus")
+    @Mapping(target = "typeOtp", source = ".", qualifiedByName = "getTypeOtp")
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
-    OtpEntity toEntity(ResetPasswordContext ctx);
+    OtpEntity toResetOtpEntity(ResetPasswordContext ctx);
+
+    @Named("getTypeOtp")
+    default TypeOtp getTypeOtp(ResetPasswordContext request) {
+        return TypeOtp.RESET;
+    }
 }

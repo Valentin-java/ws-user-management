@@ -1,6 +1,7 @@
 package com.workers.wsusermanagement.persistence.entity;
 
 import com.workers.wsusermanagement.persistence.enums.ActivityStatus;
+import com.workers.wsusermanagement.persistence.enums.TypeOtp;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -41,6 +42,10 @@ public class OtpEntity {
     @Enumerated(EnumType.STRING)
     @Column(name = "activity_status")
     private ActivityStatus activityStatus;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "type_otp")
+    private TypeOtp typeOtp;
 
     @Column(name = "created_at")
     @CreationTimestamp

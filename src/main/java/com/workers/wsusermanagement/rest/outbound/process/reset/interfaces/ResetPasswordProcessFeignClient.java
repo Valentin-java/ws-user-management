@@ -1,8 +1,8 @@
 package com.workers.wsusermanagement.rest.outbound.process.reset.interfaces;
 
-import com.workers.wsusermanagement.bussines.service.reset.context.ResetPasswordContext;
+import com.workers.wsusermanagement.bussines.service.confirmotp.context.ConfirmationOtpContext;
 
 public interface ResetPasswordProcessFeignClient {
 
-    ResetPasswordContext requestToExecuteByService(ResetPasswordContext ctx);
+    ConfirmationOtpContext requestToExecuteByService(ConfirmationOtpContext ctx);
 }
