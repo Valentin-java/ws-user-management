@@ -9,7 +9,7 @@ import lombok.experimental.Accessors;
 @Data
 @Accessors(chain = true)
 public class SignUpContext {
-    private SignUpRequest signUpRequest;
+    private SignUpRequest request;
     private AuthRequest authRequest;
     private AssignRoleRequest assignRoleRequest;
 }

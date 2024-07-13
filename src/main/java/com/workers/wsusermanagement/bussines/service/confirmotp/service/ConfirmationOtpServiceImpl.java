@@ -2,7 +2,7 @@ package com.workers.wsusermanagement.bussines.service.confirmotp.service;
 
 import com.workers.wsusermanagement.bussines.service.confirmotp.context.ConfirmationOtpContext;
 import com.workers.wsusermanagement.bussines.service.confirmotp.interfaces.ConfirmationOtpService;
-import com.workers.wsusermanagement.bussines.service.reset.model.ResetPasswordResponse;
+import com.workers.wsusermanagement.bussines.service.resetpass.model.ResetPasswordResponse;
 import com.workers.wsusermanagement.bussines.service.validation.signup.SignUpValidationService;
 import com.workers.wsusermanagement.persistence.entity.OtpEntity;
 import com.workers.wsusermanagement.persistence.enums.ActivityStatus;
@@ -14,10 +14,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
+import static com.workers.wsusermanagement.util.CommonConstant.UNEXPECTED_ERROR_MESSAGE;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
 @Slf4j
@@ -29,10 +32,10 @@ public class ConfirmationOtpServiceImpl implements ConfirmationOtpService {
     private final OtpEntityRepository otpEntityRepository;
     private final SignUpValidationService validationService;
     private final ResetPasswordProcessFeignClient resetPasswordProcessFeignClient;
-    private static final int EXCEED_TIMES = 2;
+    private static final int EXCEED_TIMES = 3;
 
     @Override
-    public ResetPasswordResponse confirmOtpProcess(ConfirmationOtpContext ctx) {
+    public ResetPasswordResponse doProcess(ConfirmationOtpContext ctx) {
         return Optional.of(ctx)
                 .map(this::validateRequest)
                 .map(this::validateExistingCustomer)
@@ -44,24 +47,30 @@ public class ConfirmationOtpServiceImpl implements ConfirmationOtpService {
                 .map(this::activateOtp)
                 .map(resetPasswordProcessFeignClient::requestToExecuteByService)
                 .map(this::createResetPasswordResponse)
-                .orElseThrow(() -> new ResponseStatusException(BAD_REQUEST, "Не удалось сбросить пароль клиента"));
+                .orElseThrow(() -> new ResponseStatusException(BAD_REQUEST, UNEXPECTED_ERROR_MESSAGE));
     }
 
     private ConfirmationOtpContext validateRequest(ConfirmationOtpContext ctx) {
-        validationService.validate(ctx.getOtpRequest());
+        validationService.validate(ctx.getRequest());
         return ctx;
     }
 
     private ConfirmationOtpContext validateExistingCustomer(ConfirmationOtpContext ctx) {
-        var userProfile = userProfileRepository.findByUsername(ctx.getOtpRequest().phoneNumber())
+        var userProfile = userProfileRepository.findByUsername(ctx.getRequest().phoneNumber())
                 .orElseThrow(() -> new ResponseStatusException(BAD_REQUEST, "Пользователь в системе не существует"));
         ctx.setUserProfile(userProfile);
         return ctx;
     }
 
     private ConfirmationOtpContext validateExceedTimesToReset(ConfirmationOtpContext ctx) {
-        List<OtpEntity> otpList = otpEntityRepository.findAllByUsername(ctx.getResetPasswordRequest().password());
-        if (otpList.size() > EXCEED_TIMES) {
+        List<OtpEntity> otpList = otpEntityRepository.findAllByUsername(ctx.getRequest().password());
+        LocalDate today = LocalDate.now();
+
+        long otpCountToday = otpList.stream()
+                .filter(otp -> otp.getCreatedAt().toLocalDate().equals(today))
+                .count();
+
+        if (otpCountToday > EXCEED_TIMES) {
             ctx.getUserProfile().setActivityStatus(ActivityStatus.BLOCKED_TO_RESET);
             userProfileRepository.save(ctx.getUserProfile());
         }
@@ -83,10 +92,14 @@ public class ConfirmationOtpServiceImpl implements ConfirmationOtpService {
     }
 
     private ConfirmationOtpContext findLatestInactiveOtp(ConfirmationOtpContext ctx) {
-        OtpEntity otpEntity = otpEntityRepository.findAllByUsername(ctx.getOtpRequest().phoneNumber()).stream()
+        OtpEntity otpEntity = otpEntityRepository.findAllByUsername(ctx.getRequest().phoneNumber()).stream()
                 .filter(e -> ActivityStatus.INACTIVE.equals(e.getActivityStatus()))
                 .max(Comparator.comparing(OtpEntity::getCreatedAt))
                 .orElseThrow(() -> new ResponseStatusException(BAD_REQUEST, "Одноразовый пароль в системе не существует"));
+
+        if (otpEntity.getCreatedAt().isBefore(LocalDateTime.now().minusMinutes(10))) {
+            throw new ResponseStatusException(BAD_REQUEST, "Одноразовый пароль устарел");
+        }
 
         ctx.setOtpEntity(otpEntity);
         return ctx;
@@ -94,7 +107,7 @@ public class ConfirmationOtpServiceImpl implements ConfirmationOtpService {
 
     private ConfirmationOtpContext compareOtp(ConfirmationOtpContext ctx) {
         String actualOtp = ctx.getOtpEntity().getOtp();
-        String enteredOtp = ctx.getOtpRequest().otp();
+        String enteredOtp = ctx.getRequest().otp();
         if (actualOtp.equals(enteredOtp)) {
             return ctx;
         }
@@ -108,6 +121,6 @@ public class ConfirmationOtpServiceImpl implements ConfirmationOtpService {
     }
 
     private ResetPasswordResponse createResetPasswordResponse(ConfirmationOtpContext ctx) {
-        return new ResetPasswordResponse(ctx.getOtpRequest().phoneNumber(), "OK");
+        return new ResetPasswordResponse(ctx.getRequest().phoneNumber(), "OK");
     }
 }

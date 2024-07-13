@@ -1,6 +1,6 @@
 package com.workers.wsusermanagement.rest.outbound.process.notification.client;
 
-import com.workers.wsusermanagement.bussines.service.reset.context.ResetPasswordContext;
+import com.workers.wsusermanagement.bussines.service.resetpass.context.ResetPasswordContext;
 import com.workers.wsusermanagement.rest.outbound.feign.WsNotificationServiceFeign;
 import com.workers.wsusermanagement.rest.outbound.mapper.NotificationRequestMapper;
 import com.workers.wsusermanagement.rest.outbound.process.AbstractProcessFeignClient;

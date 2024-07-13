@@ -24,7 +24,7 @@ public class UserRegistryProcessFeignClientImpl
 
     @Override
     protected SignUpContext mappingToRequest(SignUpContext ctx) {
-        var authRequest = authRequestMapper.toAuthRequest(ctx.getSignUpRequest());
+        var authRequest = authRequestMapper.toAuthRequest(ctx.getRequest());
         ctx.setAuthRequest(authRequest);
         return ctx;
     }

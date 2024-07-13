@@ -1,8 +1,8 @@
-package com.workers.wsusermanagement.bussines.service.reset.service;
+package com.workers.wsusermanagement.bussines.service.resetpass.service;
 
-import com.workers.wsusermanagement.bussines.service.reset.context.ResetPasswordContext;
-import com.workers.wsusermanagement.bussines.service.reset.interfaces.ResetPasswordService;
-import com.workers.wsusermanagement.bussines.service.reset.model.ResetPasswordResponse;
+import com.workers.wsusermanagement.bussines.service.resetpass.context.ResetPasswordContext;
+import com.workers.wsusermanagement.bussines.service.resetpass.interfaces.ResetPasswordService;
+import com.workers.wsusermanagement.bussines.service.resetpass.model.ResetPasswordResponse;
 import com.workers.wsusermanagement.bussines.service.validation.signup.SignUpValidationService;
 import com.workers.wsusermanagement.persistence.entity.OtpEntity;
 import com.workers.wsusermanagement.persistence.enums.ActivityStatus;
@@ -16,9 +16,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.security.SecureRandom;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
+import static com.workers.wsusermanagement.util.CommonConstant.UNEXPECTED_ERROR_MESSAGE;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
 @Slf4j
@@ -32,10 +34,10 @@ public class ResetPasswordServiceImpl implements ResetPasswordService {
     private final SignUpValidationService validationService;
     private final WsNotificationServiceFeignClient wsNotificationServiceFeignClient;
     private static final int OTP_LENGTH = 4;
-    private static final int EXCEED_TIMES = 2;
+    private static final int EXCEED_TIMES = 3;
 
     @Override
-    public ResetPasswordResponse resetPasswordProcess(ResetPasswordContext ctx) {
+    public ResetPasswordResponse doProcess(ResetPasswordContext ctx) {
         return Optional.of(ctx)
                 .map(this::validateRequest)
                 .map(this::validateExistingCustomer)
@@ -46,25 +48,32 @@ public class ResetPasswordServiceImpl implements ResetPasswordService {
                 .map(this::generateNewOtp)
                 .map(this::saveOtpByUserProfile)
                 .map(wsNotificationServiceFeignClient::requestToExecuteByService)
-                .map(this::createResetPasswordResponse)
-                .orElseThrow(() -> new ResponseStatusException(BAD_REQUEST, "Не удалось сбросить пароль клиента"));
+                .map(this::createResponse)
+                .orElseThrow(() -> new ResponseStatusException(BAD_REQUEST, UNEXPECTED_ERROR_MESSAGE));
     }
 
     private ResetPasswordContext validateRequest(ResetPasswordContext ctx) {
-        validationService.validate(ctx.getResetPasswordRequest());
+        validationService.validate(ctx.getRequest());
         return ctx;
     }
 
     private ResetPasswordContext validateExistingCustomer(ResetPasswordContext ctx) {
-        var userProfile = userProfileRepository.findByUsername(ctx.getResetPasswordRequest().password())
+        var userProfile = userProfileRepository.findByUsername(ctx.getRequest().password())
                 .orElseThrow(() -> new ResponseStatusException(BAD_REQUEST, "Пользователь в системе не существует"));
         ctx.setUserProfile(userProfile);
         return ctx;
     }
 
     private ResetPasswordContext validateExceedTimesToReset(ResetPasswordContext ctx) {
-        List<OtpEntity> otpList = otpEntityRepository.findAllByUsername(ctx.getResetPasswordRequest().password());
-        if (otpList.size() > EXCEED_TIMES) {
+        List<OtpEntity> otpList = otpEntityRepository.findAllByUsername(ctx.getRequest().password());
+        LocalDate today = LocalDate.now();
+
+        // Фильтруем список OTP, чтобы оставить только те, которые были созданы сегодня
+        long otpCountToday = otpList.stream()
+                .filter(otp -> otp.getCreatedAt().toLocalDate().equals(today))
+                .count();
+
+        if (otpCountToday > EXCEED_TIMES) {
             ctx.getUserProfile().setActivityStatus(ActivityStatus.BLOCKED_TO_RESET);
             userProfileRepository.save(ctx.getUserProfile());
         }
@@ -79,17 +88,15 @@ public class ResetPasswordServiceImpl implements ResetPasswordService {
     }
 
     private ResetPasswordContext deactivateUserProfile(ResetPasswordContext ctx) {
-        ctx.getUserProfile().setActivityStatus(ctx.getResetPasswordRequest().activityStatus());
+        ctx.getUserProfile().setActivityStatus(ctx.getRequest().activityStatus());
         userProfileRepository.save(ctx.getUserProfile());
         return ctx;
     }
 
     private ResetPasswordContext deactivateOtherOtp(ResetPasswordContext ctx) {
-        List<OtpEntity> otpList = otpEntityRepository.findAllByUsername(ctx.getResetPasswordRequest().password());
+        List<OtpEntity> otpList = otpEntityRepository.findAllByUsername(ctx.getRequest().password());
 
-        otpList.stream()
-                .filter(e -> ActivityStatus.INACTIVE.equals(e.getActivityStatus()))
-                .forEach(e -> e.setActivityStatus(ActivityStatus.ACTIVE));
+        otpList.forEach(e -> e.setActivityStatus(ActivityStatus.NO_ACTUAL));
 
         otpEntityRepository.saveAll(otpList);
         return ctx;
@@ -107,7 +114,7 @@ public class ResetPasswordServiceImpl implements ResetPasswordService {
         return ctx;
     }
 
-    private ResetPasswordResponse createResetPasswordResponse(ResetPasswordContext ctx) {
-        return new ResetPasswordResponse(ctx.getResetPasswordRequest().phoneNumber(), "OK");
+    private ResetPasswordResponse createResponse(ResetPasswordContext ctx) {
+        return new ResetPasswordResponse(ctx.getRequest().phoneNumber(), "OK");
     }
 }

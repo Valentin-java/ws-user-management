@@ -1,9 +1,10 @@
 package com.workers.wsusermanagement.rest.outbound.mapper;
 
-import com.workers.wsusermanagement.bussines.service.reset.model.ResetPasswordRequest;
+import com.workers.wsusermanagement.bussines.service.resetpass.model.ResetPasswordRequest;
 import com.workers.wsusermanagement.bussines.service.signin.model.SignInRequest;
 import com.workers.wsusermanagement.config.mapper.MapperConfiguration;
 import com.workers.wsusermanagement.bussines.service.signup.model.SignUpRequest;
+import com.workers.wsusermanagement.rest.inbound.dto.OtpRequest;
 import com.workers.wsusermanagement.rest.outbound.model.AssignRoleRequest;
 import com.workers.wsusermanagement.rest.outbound.model.AuthRequest;
 import org.mapstruct.Mapper;
@@ -20,7 +21,7 @@ public interface AuthRequestMapper {
 
     @Mapping(target = "username", source = "phoneNumber")
     @Mapping(target = "password", ignore = true)
-    AuthRequest toAuthRequest(ResetPasswordRequest request);
+    AuthRequest toAuthRequest(OtpRequest request);
 
     @Mapping(target = "username", source = "phoneNumber")
     @Mapping(target = "role", source = "customerRole")

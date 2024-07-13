@@ -33,7 +33,7 @@ public class SignUpServiceImpl implements SignUpService {
     private final CustomerMapper customerMapper;
 
     @Override
-    public SignUpResponse signUpProcess(SignUpContext ctx) {
+    public SignUpResponse doProcess(SignUpContext ctx) {
         return Optional.of(ctx)
                 .map(this::validateRequest)
                 .map(this::validateUniqueCustomer)
@@ -42,33 +42,38 @@ public class SignUpServiceImpl implements SignUpService {
                 .map(userAssignRoleProcessFeignClient::requestToExecuteByService)
                 .map(userActivationProcessFeignClient::requestToExecuteByService)
                 .map(this::activationCustomerProfile)
-                .orElseThrow(() -> new ResponseStatusException(BAD_REQUEST, "Не удалось зарегистрировать клиента"));
+                .map(this::createResponse)
+                .orElseThrow(() -> new ResponseStatusException(BAD_REQUEST, UNEXPECTED_ERROR_MESSAGE));
     }
 
     private SignUpContext validateRequest(SignUpContext ctx) {
-        validationService.validate(ctx.getSignUpRequest());
+        validationService.validate(ctx.getRequest());
         return ctx;
     }
 
     private SignUpContext validateUniqueCustomer(SignUpContext request) {
-        if (!userProfileRepository.existsUserProfileByUsername(request.getSignUpRequest().phoneNumber())) {
+        if (!userProfileRepository.existsUserProfileByUsername(request.getRequest().phoneNumber())) {
             return request;
         }
         throw new ResponseStatusException(BAD_REQUEST, "Пользователь в системе уже существует");
     }
 
     private SignUpContext createCustomerProfile(SignUpContext ctx) {
-        var customerProfile = customerMapper.toEntity(ctx.getSignUpRequest());
+        var customerProfile = customerMapper.toEntity(ctx.getRequest());
         userProfileRepository.save(customerProfile);
         return ctx;
     }
 
-    private SignUpResponse activationCustomerProfile(SignUpContext ctx) {
-        var userProfile = userProfileRepository.findByUsername(ctx.getSignUpRequest().phoneNumber())
+    private SignUpContext activationCustomerProfile(SignUpContext ctx) {
+        var userProfile = userProfileRepository.findByUsername(ctx.getRequest().phoneNumber())
                 .orElseThrow(() -> new ResponseStatusException(BAD_REQUEST, UNEXPECTED_ERROR_MESSAGE));
         userProfile.setActivityStatus(ActivityStatus.ACTIVE);
         userProfileRepository.save(userProfile);
 
-        return new SignUpResponse(userProfile.getUsername(), "Пользователь успешно зарегистрирован");
+        return ctx;
+    }
+
+    private SignUpResponse createResponse(SignUpContext ctx) {
+        return new SignUpResponse(ctx.getRequest().phoneNumber(), "Пользователь успешно зарегистрирован");
     }
 }
