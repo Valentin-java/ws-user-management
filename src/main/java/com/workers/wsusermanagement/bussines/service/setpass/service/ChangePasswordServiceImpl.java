@@ -40,7 +40,7 @@ public class ChangePasswordServiceImpl implements ChangePasswordService {
                 .map(this::validateBlockedStatus)
                 .map(this::validateActivityProfileStatus)
                 .map(this::findActiveOtp)
-
+                // поход в ws-auth для смены пароля
 
 
 

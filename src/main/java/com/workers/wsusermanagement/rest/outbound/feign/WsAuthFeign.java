@@ -18,7 +18,10 @@ public interface WsAuthFeign {
     ResponseEntity<String> assignRole(@RequestBody AssignRoleRequest request);
 
     @PostMapping(value = "/workers/auth/activation")
-    ResponseEntity<AuthResponse> activationCustomer(@RequestBody AuthRequest request);
+    ResponseEntity<Boolean> activationCustomer(@RequestBody AuthRequest request);
+
+    @PostMapping(value = "/workers/auth/login")
+    ResponseEntity<AuthResponse> createAuthenticationToken(@RequestBody AuthRequest request);
 
     @PostMapping(value = "/workers/auth/reset")
     ResponseEntity<Boolean> requestToResetPassword(@RequestBody AuthRequest request);

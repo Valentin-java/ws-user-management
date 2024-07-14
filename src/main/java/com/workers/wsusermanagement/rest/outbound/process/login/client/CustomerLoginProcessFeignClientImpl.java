@@ -32,7 +32,7 @@ public class CustomerLoginProcessFeignClientImpl
 
     @Override
     protected SignInContext doRequest(SignInContext ctx) {
-        var response = wsAuthFeign.activationCustomer(ctx.getAuthRequest());
+        var response = wsAuthFeign.createAuthenticationToken(ctx.getAuthRequest());
         if (response.getStatusCode().is2xxSuccessful()) {
             var responseBody = response.getBody() != null ? response.getBody() : null;
             var accessToken = responseBody.accessToken();
