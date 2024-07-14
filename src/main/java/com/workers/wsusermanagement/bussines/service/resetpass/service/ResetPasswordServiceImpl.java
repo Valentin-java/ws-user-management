@@ -43,7 +43,6 @@ public class ResetPasswordServiceImpl implements ResetPasswordService {
                 .map(this::validateExistingCustomer)
                 .map(this::validateExceedTimesToReset)
                 .map(this::validateBlockedStatus)
-                .map(this::deactivateUserProfile)
                 .map(this::deactivateOtherOtp)
                 .map(this::generateNewOtp)
                 .map(this::saveOtpByUserProfile)
@@ -84,12 +83,6 @@ public class ResetPasswordServiceImpl implements ResetPasswordService {
         if (ActivityStatus.BLOCKED_TO_RESET.equals(ctx.getUserProfile().getActivityStatus())) {
             throw new ResponseStatusException(BAD_REQUEST, "Профиль заблокирован для сброса пароля");
         }
-        return ctx;
-    }
-
-    private ResetPasswordContext deactivateUserProfile(ResetPasswordContext ctx) {
-        ctx.getUserProfile().setActivityStatus(ctx.getRequest().activityStatus());
-        userProfileRepository.save(ctx.getUserProfile());
         return ctx;
     }
 

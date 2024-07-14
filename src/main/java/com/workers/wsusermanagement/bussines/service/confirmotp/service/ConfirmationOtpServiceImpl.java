@@ -2,6 +2,7 @@ package com.workers.wsusermanagement.bussines.service.confirmotp.service;
 
 import com.workers.wsusermanagement.bussines.service.confirmotp.context.ConfirmationOtpContext;
 import com.workers.wsusermanagement.bussines.service.confirmotp.interfaces.ConfirmationOtpService;
+import com.workers.wsusermanagement.bussines.service.resetpass.context.ResetPasswordContext;
 import com.workers.wsusermanagement.bussines.service.resetpass.model.ResetPasswordResponse;
 import com.workers.wsusermanagement.bussines.service.validation.signup.SignUpValidationService;
 import com.workers.wsusermanagement.persistence.entity.OtpEntity;
@@ -33,6 +34,7 @@ public class ConfirmationOtpServiceImpl implements ConfirmationOtpService {
     private final SignUpValidationService validationService;
     private final ResetPasswordProcessFeignClient resetPasswordProcessFeignClient;
     private static final int EXCEED_TIMES = 3;
+    private static final int OTP_TTL_MINS = 10;
 
     @Override
     public ResetPasswordResponse doProcess(ConfirmationOtpContext ctx) {
@@ -41,10 +43,10 @@ public class ConfirmationOtpServiceImpl implements ConfirmationOtpService {
                 .map(this::validateExistingCustomer)
                 .map(this::validateExceedTimesToReset)
                 .map(this::validateBlockedStatus)
-                .map(this::validateActivityProfileStatus)
                 .map(this::findLatestInactiveOtp)
                 .map(this::compareOtp)
                 .map(this::activateOtp)
+                .map(this::deactivateUserProfile)
                 .map(resetPasswordProcessFeignClient::requestToExecuteByService)
                 .map(this::createResetPasswordResponse)
                 .orElseThrow(() -> new ResponseStatusException(BAD_REQUEST, UNEXPECTED_ERROR_MESSAGE));
@@ -84,20 +86,13 @@ public class ConfirmationOtpServiceImpl implements ConfirmationOtpService {
         return ctx;
     }
 
-    private ConfirmationOtpContext validateActivityProfileStatus(ConfirmationOtpContext ctx) {
-        if (ActivityStatus.INACTIVE.equals(ctx.getUserProfile().getActivityStatus())) {
-            return ctx;
-        }
-        throw new ResponseStatusException(BAD_REQUEST, "Отп применяется для активного профиля");
-    }
-
     private ConfirmationOtpContext findLatestInactiveOtp(ConfirmationOtpContext ctx) {
         OtpEntity otpEntity = otpEntityRepository.findAllByUsername(ctx.getRequest().phoneNumber()).stream()
                 .filter(e -> ActivityStatus.INACTIVE.equals(e.getActivityStatus()))
                 .max(Comparator.comparing(OtpEntity::getCreatedAt))
                 .orElseThrow(() -> new ResponseStatusException(BAD_REQUEST, "Одноразовый пароль в системе не существует"));
 
-        if (otpEntity.getCreatedAt().isBefore(LocalDateTime.now().minusMinutes(10))) {
+        if (otpEntity.getCreatedAt().isBefore(LocalDateTime.now().minusMinutes(OTP_TTL_MINS))) {
             throw new ResponseStatusException(BAD_REQUEST, "Одноразовый пароль устарел");
         }
 
@@ -117,6 +112,12 @@ public class ConfirmationOtpServiceImpl implements ConfirmationOtpService {
     private ConfirmationOtpContext activateOtp(ConfirmationOtpContext ctx) {
         ctx.getOtpEntity().setActivityStatus(ActivityStatus.ACTIVE);
         otpEntityRepository.save(ctx.getOtpEntity());
+        return ctx;
+    }
+
+    private ConfirmationOtpContext deactivateUserProfile(ConfirmationOtpContext ctx) {
+        ctx.getUserProfile().setActivityStatus(ActivityStatus.INACTIVE);
+        userProfileRepository.save(ctx.getUserProfile());
         return ctx;
     }
 

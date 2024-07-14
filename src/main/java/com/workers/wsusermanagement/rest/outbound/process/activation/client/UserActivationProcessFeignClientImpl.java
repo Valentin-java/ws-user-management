@@ -34,7 +34,7 @@ public class UserActivationProcessFeignClientImpl
 
     @Override
     protected SignUpContext doRequest(SignUpContext ctx) {
-        var response = wsAuthFeign.registerCustomer(ctx.getAuthRequest());
+        var response = wsAuthFeign.activationCustomer(ctx.getAuthRequest());
         if (Boolean.TRUE.equals(response.getBody())) {
             return ctx;
         }

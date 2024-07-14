@@ -31,7 +31,7 @@ public class ResetPasswordProcessFeignClientImpl
 
     @Override
     protected ConfirmationOtpContext doRequest(ConfirmationOtpContext ctx) {
-        var response = wsAuthFeign.registerCustomer(ctx.getAuthRequest());
+        var response = wsAuthFeign.requestToResetPassword(ctx.getAuthRequest());
         if (Boolean.TRUE.equals(response.getBody())) {
             return ctx;
         }
