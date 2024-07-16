@@ -2,12 +2,17 @@ package com.workers.wsusermanagement.bussines.service.setpass.service;
 
 import com.workers.wsusermanagement.bussines.service.setpass.context.ChangePasswordContext;
 import com.workers.wsusermanagement.bussines.service.setpass.interfaces.ChangePasswordService;
+import com.workers.wsusermanagement.bussines.service.setpass.mapper.ChangeContextMapper;
+import com.workers.wsusermanagement.bussines.service.signin.context.SignInContext;
 import com.workers.wsusermanagement.bussines.service.signin.model.SignInResponse;
 import com.workers.wsusermanagement.bussines.service.validation.signup.SignUpValidationService;
 import com.workers.wsusermanagement.persistence.entity.OtpEntity;
 import com.workers.wsusermanagement.persistence.enums.ActivityStatus;
 import com.workers.wsusermanagement.persistence.repository.OtpEntityRepository;
 import com.workers.wsusermanagement.persistence.repository.UserProfileRepository;
+import com.workers.wsusermanagement.rest.outbound.process.changepass.interfaces.ChangePasswordProcessFeignClient;
+import com.workers.wsusermanagement.rest.outbound.process.login.interfaces.CustomerLoginProcessFeignClient;
+import com.workers.wsusermanagement.rest.outbound.process.notification.interfaces.SendWarnNotificationFeignClient;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -29,6 +34,10 @@ public class ChangePasswordServiceImpl implements ChangePasswordService {
     private final UserProfileRepository userProfileRepository;
     private final OtpEntityRepository otpEntityRepository;
     private final SignUpValidationService validationService;
+    private final ChangePasswordProcessFeignClient changePasswordProcessFeignClient;
+    private final SendWarnNotificationFeignClient sendWarnNotificationFeignClient;
+    private final ChangeContextMapper changeContextMapper;
+    private final CustomerLoginProcessFeignClient customerLoginProcessFeignClient;
     private static final int EXCEED_TIMES = 2;
 
     @Override
@@ -40,10 +49,10 @@ public class ChangePasswordServiceImpl implements ChangePasswordService {
                 .map(this::validateBlockedStatus)
                 .map(this::validateActivityProfileStatus)
                 .map(this::findActiveOtp)
-                // поход в ws-auth для смены пароля
-
-
-
+                .map(changePasswordProcessFeignClient::requestToExecuteByService)
+                .map(sendWarnNotificationFeignClient::requestToExecuteByService)
+                .map(changeContextMapper::toSignIn)
+                .map(customerLoginProcessFeignClient::requestToExecuteByService)
                 .map(this::createResponse)
                 .orElseThrow(() -> new ResponseStatusException(BAD_REQUEST, UNEXPECTED_ERROR_MESSAGE));
     }
@@ -99,14 +108,7 @@ public class ChangePasswordServiceImpl implements ChangePasswordService {
         return ctx;
     }
 
-    //  изменим пароль и установим в ws-auth
-    // сделаем логин, отдадим токен
-
-
-
-
-
-    private SignInResponse createResponse(ChangePasswordContext ctx) {
+    private SignInResponse createResponse(SignInContext ctx) {
         return ctx.getSignInResponse();
     }
 }

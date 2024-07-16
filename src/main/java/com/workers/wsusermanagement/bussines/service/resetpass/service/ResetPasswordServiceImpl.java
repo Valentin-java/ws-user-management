@@ -9,7 +9,7 @@ import com.workers.wsusermanagement.persistence.enums.ActivityStatus;
 import com.workers.wsusermanagement.persistence.mapper.OtpEntityMapper;
 import com.workers.wsusermanagement.persistence.repository.OtpEntityRepository;
 import com.workers.wsusermanagement.persistence.repository.UserProfileRepository;
-import com.workers.wsusermanagement.rest.outbound.process.notification.interfaces.WsNotificationServiceFeignClient;
+import com.workers.wsusermanagement.rest.outbound.process.notification.interfaces.SenOtpNotificationFeignClient;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -32,7 +32,7 @@ public class ResetPasswordServiceImpl implements ResetPasswordService {
     private final UserProfileRepository userProfileRepository;
     private final OtpEntityRepository otpEntityRepository;
     private final SignUpValidationService validationService;
-    private final WsNotificationServiceFeignClient wsNotificationServiceFeignClient;
+    private final SenOtpNotificationFeignClient senOtpNotificationFeignClient;
     private static final int OTP_LENGTH = 4;
     private static final int EXCEED_TIMES = 3;
 
@@ -46,7 +46,7 @@ public class ResetPasswordServiceImpl implements ResetPasswordService {
                 .map(this::deactivateOtherOtp)
                 .map(this::generateNewOtp)
                 .map(this::saveOtpByUserProfile)
-                .map(wsNotificationServiceFeignClient::requestToExecuteByService)
+                .map(senOtpNotificationFeignClient::requestToExecuteByService)
                 .map(this::createResponse)
                 .orElseThrow(() -> new ResponseStatusException(BAD_REQUEST, UNEXPECTED_ERROR_MESSAGE));
     }
