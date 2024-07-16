@@ -1,6 +1,5 @@
 package com.workers.wsusermanagement.rest.outbound.mapper;
 
-import com.workers.wsusermanagement.bussines.service.resetpass.model.ResetPasswordRequest;
 import com.workers.wsusermanagement.bussines.service.signin.model.SignInRequest;
 import com.workers.wsusermanagement.config.mapper.MapperConfiguration;
 import com.workers.wsusermanagement.bussines.service.signup.model.SignUpRequest;

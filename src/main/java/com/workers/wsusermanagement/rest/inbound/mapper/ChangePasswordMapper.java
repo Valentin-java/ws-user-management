@@ -16,5 +16,7 @@ public interface ChangePasswordMapper {
     @Mapping(target = "userProfile", ignore = true)
     @Mapping(target = "notificationRequest", ignore = true)
     @Mapping(target = "signInResponse", ignore = true)
+    @Mapping(target = "authRequest", ignore = true)
+    @Mapping(target = "notificationMsg", ignore = true)
     ChangePasswordContext toServiceContext(UserSignUpRequest request);
 }

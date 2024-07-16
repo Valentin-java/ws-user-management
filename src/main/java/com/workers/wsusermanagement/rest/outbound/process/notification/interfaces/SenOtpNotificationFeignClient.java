@@ -2,7 +2,7 @@ package com.workers.wsusermanagement.rest.outbound.process.notification.interfac
 
 import com.workers.wsusermanagement.bussines.service.resetpass.context.ResetPasswordContext;
 
-public interface WsNotificationServiceFeignClient {
+public interface SenOtpNotificationFeignClient {
 
     ResetPasswordContext requestToExecuteByService(ResetPasswordContext ctx);
 }
