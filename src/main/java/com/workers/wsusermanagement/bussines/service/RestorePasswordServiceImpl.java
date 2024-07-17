@@ -76,5 +76,5 @@ public class RestorePasswordServiceImpl implements RestorePasswordService {
                 .orElseThrow(() -> new ResponseStatusException(BAD_REQUEST, UNEXPECTED_ERROR_MESSAGE));
     }
 
-    // blocked статус поставить на шедулер на 24 часа
+    // TODO blocked статус поставить на шедулер на 24 часа
 }
