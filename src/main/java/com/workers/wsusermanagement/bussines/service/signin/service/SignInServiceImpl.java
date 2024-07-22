@@ -4,9 +4,7 @@ import com.workers.wsusermanagement.bussines.service.signin.context.SignInContex
 import com.workers.wsusermanagement.bussines.service.signin.interfaces.SignInService;
 import com.workers.wsusermanagement.bussines.service.signin.model.SignInResponse;
 import com.workers.wsusermanagement.bussines.service.validation.signup.SignUpValidationService;
-import com.workers.wsusermanagement.persistence.entity.OtpEntity;
 import com.workers.wsusermanagement.persistence.enums.ActivityStatus;
-import com.workers.wsusermanagement.persistence.repository.OtpEntityRepository;
 import com.workers.wsusermanagement.persistence.repository.UserProfileRepository;
 import com.workers.wsusermanagement.rest.outbound.process.login.interfaces.CustomerLoginProcessFeignClient;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +13,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Optional;
 
 import static com.workers.wsusermanagement.util.CommonConstant.UNEXPECTED_ERROR_MESSAGE;
@@ -29,7 +26,6 @@ public class SignInServiceImpl implements SignInService {
     private final CustomerLoginProcessFeignClient customerLoginProcessFeignClient;
     private final SignUpValidationService validationService;
     private final UserProfileRepository userProfileRepository;
-    private final OtpEntityRepository otpEntityRepository;
 
     @Override
     public SignInResponse doProcess(SignInContext ctx) {
@@ -38,7 +34,6 @@ public class SignInServiceImpl implements SignInService {
                 .map(this::validateExistingCustomer)
                 .map(this::validateBlockedStatus)
                 .map(this::validateActiveStatus)
-                .map(this::whenHasInactiveOtpByUser)
                 .map(customerLoginProcessFeignClient::requestToExecuteByService)
                 .map(this::updateVisitDate)
                 .map(this::createResponse)
@@ -58,7 +53,7 @@ public class SignInServiceImpl implements SignInService {
     }
 
     private SignInContext validateBlockedStatus(SignInContext ctx) {
-        if (ActivityStatus.BLOCKED_TO_RESET.equals(ctx.getUserProfile().getActivityStatus())) {
+        if (!ActivityStatus.BLOCKED_TO_RESET.equals(ctx.getUserProfile().getActivityStatus())) {
             return ctx;
         }
 
@@ -71,15 +66,6 @@ public class SignInServiceImpl implements SignInService {
         }
 
         throw new ResponseStatusException(BAD_REQUEST, "Пользователь в системе не активен");
-    }
-
-    private SignInContext whenHasInactiveOtpByUser(SignInContext ctx) {
-        List<OtpEntity> otpList = otpEntityRepository.findAllByUsername(ctx.getRequest().phoneNumber());
-
-        otpList.forEach(e -> e.setActivityStatus(ActivityStatus.NO_ACTUAL));
-
-        otpEntityRepository.saveAll(otpList);
-        return ctx;
     }
 
     private SignInContext updateVisitDate(SignInContext ctx) {

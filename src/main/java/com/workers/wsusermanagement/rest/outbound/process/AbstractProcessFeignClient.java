@@ -19,7 +19,6 @@ import static org.springframework.http.HttpStatus.BAD_REQUEST;
 public abstract class AbstractProcessFeignClient<T> {
 
     public T requestToExecuteByService(T ctx) {
-        log.debug("[requestToSendOtp] Start requestToSendOtp");
         try {
             return Optional.of(ctx)
                     .map(this::mappingToRequest)

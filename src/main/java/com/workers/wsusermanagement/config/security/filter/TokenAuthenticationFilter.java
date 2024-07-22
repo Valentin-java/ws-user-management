@@ -36,17 +36,25 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
             "/advisor",
             "/swagger-ui",
             "/specs",
-            "/v1/workers/customer/sign-up");
+            "/v1/auth/customer/sign-in",
+            "/v1/auth/customer/sign-up",
+            "/v1/auth/handyman/sign-in",
+            "/v1/auth/handyman/sign-up",
+            "/v1/auth/restore/reset",
+            "/v1/auth/restore/otp",
+            "/v1/auth/restore/setpass"
+    );
 
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request,
                                     @NonNull HttpServletResponse response,
                                     @NonNull FilterChain filterChain) throws IOException, ServletException {
 
-        if (!WHITELIST.contains(request.getRequestURI())) {
+        if (WHITELIST.contains(request.getRequestURI())) {
+            filterChain.doFilter(request, response);
+        } else {
             doFilterRequest(request, response, filterChain);
         }
-        filterChain.doFilter(request, response);
     }
 
     private void doFilterRequest(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws IOException {

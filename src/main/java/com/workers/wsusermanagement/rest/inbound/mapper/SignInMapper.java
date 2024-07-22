@@ -6,10 +6,10 @@ import com.workers.wsusermanagement.rest.inbound.dto.UserSignInRequest;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-@Mapper(config = MapperConfiguration.class)
+@Mapper(config = MapperConfiguration.class, uses = UsernameFormatter.class)
 public interface SignInMapper {
 
-    @Mapping(target = "request.phoneNumber", source = "phoneNumber")
+    @Mapping(target = "request.phoneNumber", source = "phoneNumber", qualifiedByName = "FormatPhoneNumber")
     @Mapping(target = "request.password", source = "password")
     @Mapping(target = "authRequest", ignore = true)
     @Mapping(target = "signInResponse", ignore = true)

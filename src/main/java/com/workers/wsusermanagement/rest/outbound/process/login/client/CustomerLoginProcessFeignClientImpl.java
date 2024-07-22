@@ -11,7 +11,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ResponseStatusException;
 
-import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static com.workers.wsusermanagement.rest.outbound.util.CommonFeignUtil.getSpecificMessage;
+import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
 @Slf4j
 @Component
@@ -32,14 +33,16 @@ public class CustomerLoginProcessFeignClientImpl
 
     @Override
     protected SignInContext doRequest(SignInContext ctx) {
-        var response = wsAuthFeign.createAuthenticationToken(ctx.getAuthRequest());
-        if (response.getStatusCode().is2xxSuccessful()) {
+        try {
+            var response = wsAuthFeign.createAuthenticationToken(ctx.getAuthRequest());
             var responseBody = response.getBody() != null ? response.getBody() : null;
             var accessToken = responseBody.accessToken();
             var refreshToken = responseBody.refreshToken();
             var signInResponse = new SignInResponse(ctx.getRequest().phoneNumber(), accessToken, refreshToken);
             return ctx.setSignInResponse(signInResponse);
+
+        } catch (Exception ex) {
+            throw new ResponseStatusException(UNAUTHORIZED, getSpecificMessage(ex));
         }
-        throw new ResponseStatusException(BAD_REQUEST, "Не удалось залогинить пользователя");
     }
 }
