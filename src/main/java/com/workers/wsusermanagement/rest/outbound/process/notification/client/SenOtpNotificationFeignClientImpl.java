@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ResponseStatusException;
 
+import static com.workers.wsusermanagement.rest.outbound.util.CommonFeignUtil.getSpecificMessage;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
 @Slf4j
@@ -31,10 +32,11 @@ public class SenOtpNotificationFeignClientImpl
 
     @Override
     protected ResetPasswordContext doRequest(ResetPasswordContext ctx) {
-        var response = wsNotificationServiceFeign.sendNotificationMessage(ctx.getNotificationRequest());
-        if (Boolean.TRUE.equals(response.getBody())) {
+        try {
+            wsNotificationServiceFeign.sendNotificationMessage(ctx.getNotificationRequest());
             return ctx;
+        } catch (Exception ex) {
+            throw new ResponseStatusException(BAD_REQUEST, getSpecificMessage(ex));
         }
-        throw new ResponseStatusException(BAD_REQUEST, "Не удалось отправить временный пароль пользователя");
     }
 }

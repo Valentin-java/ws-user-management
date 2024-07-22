@@ -9,10 +9,10 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 
-@Mapper(config = MapperConfiguration.class)
+@Mapper(config = MapperConfiguration.class, uses = UsernameFormatter.class)
 public interface SignUpMapper {
 
-    @Mapping(target = "request.phoneNumber", source = "phoneNumber")
+    @Mapping(target = "request.phoneNumber", source = "phoneNumber", qualifiedByName = "FormatPhoneNumber")
     @Mapping(target = "request.password", source = "password")
     @Mapping(target = "request.activityStatus", source = ".", qualifiedByName = "getActivityStatus")
     @Mapping(target = "request.customerRole", source = ".", qualifiedByName = "getCustomerRole")
@@ -20,7 +20,7 @@ public interface SignUpMapper {
     @Mapping(target = "assignRoleRequest", ignore = true)
     SignUpContext toCustomerServiceContext(UserSignUpRequest request);
 
-    @Mapping(target = "request.phoneNumber", source = "phoneNumber")
+    @Mapping(target = "request.phoneNumber", source = "phoneNumber", qualifiedByName = "FormatPhoneNumber")
     @Mapping(target = "request.password", source = "password")
     @Mapping(target = "request.activityStatus", source = ".", qualifiedByName = "getActivityStatus")
     @Mapping(target = "request.customerRole", source = ".", qualifiedByName = "getHandymanRole")

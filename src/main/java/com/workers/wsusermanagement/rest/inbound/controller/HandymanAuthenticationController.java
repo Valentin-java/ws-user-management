@@ -1,8 +1,6 @@
 package com.workers.wsusermanagement.rest.inbound.controller;
 
 import com.workers.wsusermanagement.bussines.interfaces.HandymanAuthenticationService;
-import com.workers.wsusermanagement.bussines.interfaces.UserAuthenticationService;
-import com.workers.wsusermanagement.bussines.service.signup.model.SignUpRequest;
 import com.workers.wsusermanagement.rest.inbound.dto.UserSignInRequest;
 import com.workers.wsusermanagement.rest.inbound.dto.UserSignUpRequest;
 import lombok.RequiredArgsConstructor;
@@ -14,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/v1/workers/handyman")
+@RequestMapping("/v1/auth/handyman")
 public class HandymanAuthenticationController {
 
     private final HandymanAuthenticationService handymanAuthenticationService;

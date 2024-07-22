@@ -12,20 +12,20 @@ import org.springframework.web.bind.annotation.RequestBody;
 public interface WsAuthFeign {
 
     @PostMapping(value = "/workers/auth/register")
-    ResponseEntity<Boolean> registerCustomer(@RequestBody AuthRequest request);
+    ResponseEntity<Void> registerCustomer(@RequestBody AuthRequest request);
 
     @PostMapping(value = "/workers/auth/assign-role")
-    ResponseEntity<String> assignRole(@RequestBody AssignRoleRequest request);
+    ResponseEntity<Void> assignRole(@RequestBody AssignRoleRequest request);
 
     @PostMapping(value = "/workers/auth/activation")
-    ResponseEntity<Boolean> activationCustomer(@RequestBody AuthRequest request);
+    ResponseEntity<Void> activationCustomer(@RequestBody AuthRequest request);
 
     @PostMapping(value = "/workers/auth/login")
     ResponseEntity<AuthResponse> createAuthenticationToken(@RequestBody AuthRequest request);
 
     @PostMapping(value = "/workers/auth/reset")
-    ResponseEntity<Boolean> requestToResetPassword(@RequestBody AuthRequest request);
+    ResponseEntity<Void> requestToResetPassword(@RequestBody AuthRequest request);
 
     @PostMapping(value = "/workers/auth/changepass")
-    ResponseEntity<Boolean> requestToChangePassword(@RequestBody AuthRequest request);
+    ResponseEntity<Void> requestToChangePassword(@RequestBody AuthRequest request);
 }

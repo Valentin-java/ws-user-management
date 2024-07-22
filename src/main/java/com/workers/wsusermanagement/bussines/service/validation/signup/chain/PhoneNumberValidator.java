@@ -2,7 +2,6 @@ package com.workers.wsusermanagement.bussines.service.validation.signup.chain;
 
 import com.workers.wsusermanagement.bussines.service.common.model.SignRequest;
 import com.workers.wsusermanagement.bussines.service.validation.signup.SignUpValidator;
-
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
@@ -27,7 +26,7 @@ public class PhoneNumberValidator implements SignUpValidator {
 
         String cleanedNumber = request.phoneNumber().replaceAll("[ -()]", "");
 
-        String regex = "\\+79\\d{9}";
+        String regex = "9\\d{9}";
 
         if (!cleanedNumber.matches(regex)) {
             errors.add("Invalid phone number format");

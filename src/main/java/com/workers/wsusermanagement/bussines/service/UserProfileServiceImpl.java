@@ -2,6 +2,7 @@ package com.workers.wsusermanagement.bussines.service;
 
 import com.workers.wsusermanagement.bussines.interfaces.UserProfileService;
 import com.workers.wsusermanagement.persistence.repository.UserProfileRepository;
+import com.workers.wsusermanagement.rest.inbound.dto.UserProfileRequest;
 import com.workers.wsusermanagement.rest.inbound.dto.UserProfileResponse;
 import com.workers.wsusermanagement.rest.inbound.mapper.UserProfileMapper;
 import lombok.RequiredArgsConstructor;
@@ -30,5 +31,11 @@ public class UserProfileServiceImpl implements UserProfileService {
                 .map(Optional::get)
                 .map(userProfileMapper::toRest)
                 .orElseThrow(() -> new ResponseStatusException(BAD_REQUEST, UNEXPECTED_ERROR_MESSAGE));
+    }
+
+    @Override
+    public Boolean updateProfileData(UserProfileRequest request) {
+
+        return null;
     }
 }

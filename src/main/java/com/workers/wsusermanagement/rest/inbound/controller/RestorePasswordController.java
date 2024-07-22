@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/v1/workers/restore")
+@RequestMapping("/v1/auth/restore")
 public class RestorePasswordController {
 
     private final RestorePasswordService restorePasswordService;
