@@ -1,8 +1,9 @@
 CREATE TABLE IF NOT EXISTS "ws01_otp" (
     id BIGSERIAL NOT NULL,
+    uuid VARCHAR(255) NOT NULL,
     otp VARCHAR(255) NOT NULL,
     username VARCHAR(255) NOT NULL,
-    activity_status VARCHAR(255) NOT NULL,
-    updated_at TIMESTAMP,
-    last_visit_at TIMESTAMP
+    type_otp VARCHAR(255),
+    created_at TIMESTAMP,
+    status_otp VARCHAR(255)
     );
