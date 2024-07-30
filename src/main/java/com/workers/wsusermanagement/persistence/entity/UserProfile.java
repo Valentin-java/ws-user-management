@@ -1,6 +1,5 @@
 package com.workers.wsusermanagement.persistence.entity;
 
-
 import com.workers.wsusermanagement.persistence.enums.ActivityStatus;
 import com.workers.wsusermanagement.persistence.enums.CustomerRole;
 import jakarta.persistence.Column;
