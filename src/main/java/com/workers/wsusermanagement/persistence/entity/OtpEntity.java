@@ -1,6 +1,6 @@
 package com.workers.wsusermanagement.persistence.entity;
 
-import com.workers.wsusermanagement.persistence.enums.ActivityStatus;
+import com.workers.wsusermanagement.persistence.enums.StatusOtp;
 import com.workers.wsusermanagement.persistence.enums.TypeOtp;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -16,7 +16,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 
@@ -33,15 +32,14 @@ public class OtpEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "uuid", nullable = false)
+    private String uuid;
+
     @Column(name = "otp", nullable = false)
     private String otp;
 
     @Column(name = "username", nullable = false)
     private String username;
-
-    @Enumerated(EnumType.STRING)
-    @Column(name = "activity_status")
-    private ActivityStatus activityStatus;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "type_otp")
@@ -51,7 +49,7 @@ public class OtpEntity {
     @CreationTimestamp
     private LocalDateTime createdAt;
 
-    @Column(name = "updated_at")
-    @UpdateTimestamp
-    private LocalDateTime updatedAt;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status_otp")
+    private StatusOtp statusOtp;
 }

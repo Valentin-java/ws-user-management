@@ -1,8 +1,8 @@
 package com.workers.wsusermanagement.rest.outbound.process.login.interfaces;
 
-import com.workers.wsusermanagement.bussines.service.signin.context.SignInContext;
+import com.workers.wsusermanagement.bussines.service.signin.context.VerifySignInContext;
 
 public interface CustomerLoginProcessFeignClient {
 
-    SignInContext requestToExecuteByService(SignInContext ctx);
+    VerifySignInContext requestToExecuteByService(VerifySignInContext ctx);
 }

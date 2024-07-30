@@ -1,10 +1,10 @@
 package com.workers.wsusermanagement.rest.outbound.mapper;
 
-import com.workers.wsusermanagement.bussines.service.signin.model.SignInRequest;
+import com.workers.wsusermanagement.bussines.service.confirmotp.context.ConfirmationOtpContext;
+import com.workers.wsusermanagement.bussines.service.setpass.context.ChangePasswordContext;
+import com.workers.wsusermanagement.bussines.service.signin.context.VerifySignInContext;
+import com.workers.wsusermanagement.bussines.service.signup.context.VerifySignUpContext;
 import com.workers.wsusermanagement.config.mapper.MapperConfiguration;
-import com.workers.wsusermanagement.bussines.service.signup.model.SignUpRequest;
-import com.workers.wsusermanagement.rest.inbound.dto.OtpRequest;
-import com.workers.wsusermanagement.rest.outbound.model.AssignRoleRequest;
 import com.workers.wsusermanagement.rest.outbound.model.AuthRequest;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -12,17 +12,23 @@ import org.mapstruct.Mapping;
 @Mapper(config = MapperConfiguration.class)
 public interface AuthRequestMapper {
 
-    @Mapping(target = "username", source = "phoneNumber")
-    AuthRequest toAuthRequest(SignUpRequest request);
+    @Mapping(target = "username", source = "request.userProfile.username")
+    @Mapping(target = "password", source = "request.password")
+    @Mapping(target = "otp", constant = "false")
+    AuthRequest toAuthRequest(ChangePasswordContext request);
 
-    @Mapping(target = "username", source = "phoneNumber")
-    AuthRequest toAuthRequest(SignInRequest request);
-
-    @Mapping(target = "username", source = "phoneNumber")
+    @Mapping(target = "username", source = "userProfile.username")
     @Mapping(target = "password", ignore = true)
-    AuthRequest toAuthRequest(OtpRequest request);
+    @Mapping(target = "otp", constant = "true")
+    AuthRequest toAuthRequest(VerifySignUpContext request);
 
-    @Mapping(target = "username", source = "phoneNumber")
-    @Mapping(target = "role", source = "customerRole")
-    AssignRoleRequest toAssignRoleRequest(SignUpRequest request);
+    @Mapping(target = "username", source = "userProfile.username")
+    @Mapping(target = "password", ignore = true)
+    @Mapping(target = "otp", constant = "true")
+    AuthRequest toAuthRequest(ConfirmationOtpContext request);
+
+    @Mapping(target = "username", source = "userProfile.username")
+    @Mapping(target = "password", ignore = true)
+    @Mapping(target = "otp", constant = "true")
+    AuthRequest toAuthRequest(VerifySignInContext request);
 }

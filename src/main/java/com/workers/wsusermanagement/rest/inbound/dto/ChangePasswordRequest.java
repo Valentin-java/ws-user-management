@@ -1,7 +1,7 @@
 package com.workers.wsusermanagement.rest.inbound.dto;
 
-public record OtpRequest(
+public record ChangePasswordRequest(
         String uuid,
-        String otp
+        String password
 ) {
 }

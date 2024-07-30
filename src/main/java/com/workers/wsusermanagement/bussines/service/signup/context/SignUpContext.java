@@ -1,8 +1,8 @@
 package com.workers.wsusermanagement.bussines.service.signup.context;
 
 import com.workers.wsusermanagement.bussines.service.signup.model.SignUpRequest;
-import com.workers.wsusermanagement.rest.outbound.model.AssignRoleRequest;
-import com.workers.wsusermanagement.rest.outbound.model.AuthRequest;
+import com.workers.wsusermanagement.persistence.entity.OtpEntity;
+import com.workers.wsusermanagement.rest.outbound.model.NotificationMessage;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
@@ -10,6 +10,6 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 public class SignUpContext {
     private SignUpRequest request;
-    private AuthRequest authRequest;
-    private AssignRoleRequest assignRoleRequest;
+    private NotificationMessage notificationRequest;
+    private OtpEntity otpEntity;
 }

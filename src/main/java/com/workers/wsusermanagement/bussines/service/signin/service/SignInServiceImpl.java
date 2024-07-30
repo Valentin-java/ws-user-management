@@ -2,11 +2,13 @@ package com.workers.wsusermanagement.bussines.service.signin.service;
 
 import com.workers.wsusermanagement.bussines.service.signin.context.SignInContext;
 import com.workers.wsusermanagement.bussines.service.signin.interfaces.SignInService;
-import com.workers.wsusermanagement.bussines.service.signin.model.SignInResponse;
-import com.workers.wsusermanagement.bussines.service.validation.signup.SignUpValidationService;
+import com.workers.wsusermanagement.bussines.service.signup.model.SignUpResponse;
 import com.workers.wsusermanagement.persistence.enums.ActivityStatus;
+import com.workers.wsusermanagement.persistence.enums.StatusOtp;
+import com.workers.wsusermanagement.persistence.mapper.OtpEntityMapper;
+import com.workers.wsusermanagement.persistence.repository.OtpEntityRepository;
 import com.workers.wsusermanagement.persistence.repository.UserProfileRepository;
-import com.workers.wsusermanagement.rest.outbound.process.login.interfaces.CustomerLoginProcessFeignClient;
+import com.workers.wsusermanagement.rest.outbound.process.notification.interfaces.SendSignInOtpNotificationClient;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -23,49 +25,53 @@ import static org.springframework.http.HttpStatus.BAD_REQUEST;
 @RequiredArgsConstructor
 public class SignInServiceImpl implements SignInService {
 
-    private final CustomerLoginProcessFeignClient customerLoginProcessFeignClient;
-    private final SignUpValidationService validationService;
+    private final SendSignInOtpNotificationClient sendSignInOtpNotificationClient;
     private final UserProfileRepository userProfileRepository;
+    private final OtpEntityRepository otpEntityRepository;
+    private final OtpEntityMapper otpEntityMapper;
 
     @Override
-    public SignInResponse doProcess(SignInContext ctx) {
+    public SignUpResponse doProcess(SignInContext ctx) {
         return Optional.of(ctx)
-                .map(this::validateRequest)
-                .map(this::validateExistingCustomer)
-                .map(this::validateBlockedStatus)
-                .map(this::validateActiveStatus)
-                .map(customerLoginProcessFeignClient::requestToExecuteByService)
+                .map(this::validateUniqueCustomer)
+                .map(this::validateUserStatus)
+                .map(this::deactivateOtherOtp)
+                .map(this::createOtpEntity)
+
+                .map(sendSignInOtpNotificationClient::requestToExecuteByService)
+
                 .map(this::updateVisitDate)
                 .map(this::createResponse)
                 .orElseThrow(() -> new ResponseStatusException(BAD_REQUEST, UNEXPECTED_ERROR_MESSAGE));
     }
 
-    private SignInContext validateRequest(SignInContext ctx) {
-        validationService.validate(ctx.getRequest());
+    private SignInContext validateUniqueCustomer(SignInContext ctx) {
+        var userProfile = userProfileRepository.findByUsername(ctx.getRequest().phoneNumber())
+                .orElseThrow(() -> new ResponseStatusException(BAD_REQUEST, "Пользователя не существует"));
+        ctx.setUserProfile(userProfile);
         return ctx;
     }
 
-    private SignInContext validateExistingCustomer(SignInContext ctx) {
-        var userProfile = userProfileRepository.findByUsername(ctx.getRequest().phoneNumber())
-                .orElseThrow(() -> new ResponseStatusException(BAD_REQUEST, "Пользователя в системе не существует"));
-
-        return ctx.setUserProfile(userProfile);
-    }
-
-    private SignInContext validateBlockedStatus(SignInContext ctx) {
-        if (!ActivityStatus.BLOCKED_TO_RESET.equals(ctx.getUserProfile().getActivityStatus())) {
-            return ctx;
-        }
-
-        throw new ResponseStatusException(BAD_REQUEST, "Пользователь заблокирован по попыткам сброса пароля");
-    }
-
-    private SignInContext validateActiveStatus(SignInContext ctx) {
+    private SignInContext validateUserStatus(SignInContext ctx) {
         if (ActivityStatus.ACTIVE.equals(ctx.getUserProfile().getActivityStatus())) {
             return ctx;
         }
+        throw new ResponseStatusException(BAD_REQUEST, "Пользователь еще не активирован");
+    }
 
-        throw new ResponseStatusException(BAD_REQUEST, "Пользователь в системе не активен");
+    private SignInContext deactivateOtherOtp(SignInContext ctx) {
+        var otpEntityList = otpEntityRepository.findAllByUsername(ctx.getRequest().phoneNumber());
+        otpEntityList.forEach(otp -> otp.setStatusOtp(StatusOtp.DECLINED));
+
+        otpEntityRepository.saveAll(otpEntityList);
+        return ctx;
+    }
+
+    private SignInContext createOtpEntity(SignInContext ctx) {
+        var otpEntity = otpEntityMapper.toSignUpOtpEntity(ctx);
+        ctx.setOtpEntity(otpEntity);
+        otpEntityRepository.save(otpEntity);
+        return ctx;
     }
 
     private SignInContext updateVisitDate(SignInContext ctx) {
@@ -75,7 +81,7 @@ public class SignInServiceImpl implements SignInService {
         return ctx;
     }
 
-    private SignInResponse createResponse(SignInContext ctx) {
-        return ctx.getSignInResponse();
+    private SignUpResponse createResponse(SignInContext ctx) {
+        return new SignUpResponse(ctx.getOtpEntity().getUuid());
     }
 }

@@ -1,6 +1,7 @@
 package com.workers.wsusermanagement.rest.inbound.controller;
 
 import com.workers.wsusermanagement.bussines.interfaces.CustomerAuthenticationService;
+import com.workers.wsusermanagement.rest.inbound.dto.OtpRequest;
 import com.workers.wsusermanagement.rest.inbound.dto.UserSignInRequest;
 import com.workers.wsusermanagement.rest.inbound.dto.UserSignUpRequest;
 import lombok.RequiredArgsConstructor;
@@ -22,8 +23,18 @@ public class CustomerAuthenticationController {
         return ResponseEntity.ok(customerAuthenticationService.signUp(request));
     }
 
+    @PostMapping("/verify/sign-up")
+    public ResponseEntity<?> verifySignUp(@RequestBody OtpRequest request) {
+        return ResponseEntity.ok(customerAuthenticationService.verifySignUp(request));
+    }
+
     @PostMapping("/sign-in")
     public ResponseEntity<?> signIn(@RequestBody UserSignInRequest request) {
         return ResponseEntity.ok(customerAuthenticationService.signIn(request));
+    }
+
+    @PostMapping("/verify/sign-in")
+    public ResponseEntity<?> verifySignIn(@RequestBody OtpRequest request) {
+        return ResponseEntity.ok(customerAuthenticationService.verifySignIn(request));
     }
 }

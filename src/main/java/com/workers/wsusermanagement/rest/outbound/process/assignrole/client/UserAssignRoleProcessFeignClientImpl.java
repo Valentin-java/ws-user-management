@@ -1,8 +1,8 @@
 package com.workers.wsusermanagement.rest.outbound.process.assignrole.client;
 
-import com.workers.wsusermanagement.bussines.service.signup.context.SignUpContext;
+import com.workers.wsusermanagement.bussines.service.signup.context.VerifySignUpContext;
 import com.workers.wsusermanagement.rest.outbound.feign.WsAuthFeign;
-import com.workers.wsusermanagement.rest.outbound.mapper.AuthRequestMapper;
+import com.workers.wsusermanagement.rest.outbound.model.AssignRoleRequest;
 import com.workers.wsusermanagement.rest.outbound.process.AbstractProcessFeignClient;
 import com.workers.wsusermanagement.rest.outbound.process.assignrole.interfaces.UserAssignRoleProcessFeignClient;
 import lombok.RequiredArgsConstructor;
@@ -17,21 +17,21 @@ import static org.springframework.http.HttpStatus.BAD_REQUEST;
 @Component
 @RequiredArgsConstructor
 public class UserAssignRoleProcessFeignClientImpl
-        extends AbstractProcessFeignClient<SignUpContext>
+        extends AbstractProcessFeignClient<VerifySignUpContext>
         implements UserAssignRoleProcessFeignClient {
 
     private final WsAuthFeign wsAuthFeign;
-    private final AuthRequestMapper authRequestMapper;
 
     @Override
-    protected SignUpContext mappingToRequest(SignUpContext ctx) {
-        var authRequest = authRequestMapper.toAssignRoleRequest(ctx.getRequest());
-        ctx.setAssignRoleRequest(authRequest);
+    protected VerifySignUpContext mappingToRequest(VerifySignUpContext ctx) {
+        ctx.setAssignRoleRequest(new AssignRoleRequest(
+                ctx.getUserProfile().getUsername(),
+                ctx.getAssignRoleRequest().role()));
         return ctx;
     }
 
     @Override
-    protected SignUpContext doRequest(SignUpContext ctx) {
+    protected VerifySignUpContext doRequest(VerifySignUpContext ctx) {
         try {
             wsAuthFeign.assignRole(ctx.getAssignRoleRequest());
             return ctx;

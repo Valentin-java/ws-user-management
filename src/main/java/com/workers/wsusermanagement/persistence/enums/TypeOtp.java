@@ -1,5 +1,5 @@
 package com.workers.wsusermanagement.persistence.enums;
 
 public enum TypeOtp {
-    RESET, ACTIVITY
+    RESET, SIGN_UP, SIGN_IN
 }

@@ -1,6 +1,6 @@
 package com.workers.wsusermanagement.rest.outbound.process.activation.client;
 
-import com.workers.wsusermanagement.bussines.service.signup.context.SignUpContext;
+import com.workers.wsusermanagement.bussines.service.signup.context.VerifySignUpContext;
 import com.workers.wsusermanagement.rest.outbound.feign.WsAuthFeign;
 import com.workers.wsusermanagement.rest.outbound.mapper.AuthRequestMapper;
 import com.workers.wsusermanagement.rest.outbound.process.AbstractProcessFeignClient;
@@ -17,24 +17,24 @@ import static org.springframework.http.HttpStatus.BAD_REQUEST;
 @Component
 @RequiredArgsConstructor
 public class UserActivationProcessFeignClientImpl
-        extends AbstractProcessFeignClient<SignUpContext>
+        extends AbstractProcessFeignClient<VerifySignUpContext>
         implements UserActivationProcessFeignClient {
 
     private final WsAuthFeign wsAuthFeign;
     private final AuthRequestMapper authRequestMapper;
 
     @Override
-    protected SignUpContext mappingToRequest(SignUpContext ctx) {
+    protected VerifySignUpContext mappingToRequest(VerifySignUpContext ctx) {
         if (ctx.getAuthRequest() != null) {
             return ctx;
         }
-        var authRequest = authRequestMapper.toAuthRequest(ctx.getRequest());
+        var authRequest = authRequestMapper.toAuthRequest(ctx);
         ctx.setAuthRequest(authRequest);
         return ctx;
     }
 
     @Override
-    protected SignUpContext doRequest(SignUpContext ctx) {
+    protected VerifySignUpContext doRequest(VerifySignUpContext ctx) {
         try {
             wsAuthFeign.activationCustomer(ctx.getAuthRequest());
             return ctx;

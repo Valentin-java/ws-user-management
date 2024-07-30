@@ -9,7 +9,7 @@ import org.mapstruct.Mapping;
 @Mapper(config = MapperConfiguration.class)
 public interface ConfirmationOtpMapper {
 
-    @Mapping(target = "request.phoneNumber", source = "phoneNumber")
+    @Mapping(target = "request.uuid", source = "uuid")
     @Mapping(target = "request.otp", source = "otp")
     @Mapping(target = "userProfile", ignore = true)
     @Mapping(target = "otpEntity", ignore = true)

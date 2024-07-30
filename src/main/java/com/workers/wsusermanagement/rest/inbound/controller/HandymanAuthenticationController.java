@@ -1,6 +1,7 @@
 package com.workers.wsusermanagement.rest.inbound.controller;
 
 import com.workers.wsusermanagement.bussines.interfaces.HandymanAuthenticationService;
+import com.workers.wsusermanagement.rest.inbound.dto.OtpRequest;
 import com.workers.wsusermanagement.rest.inbound.dto.UserSignInRequest;
 import com.workers.wsusermanagement.rest.inbound.dto.UserSignUpRequest;
 import lombok.RequiredArgsConstructor;
@@ -22,8 +23,18 @@ public class HandymanAuthenticationController {
         return ResponseEntity.ok(handymanAuthenticationService.signUp(request));
     }
 
+    @PostMapping("/verify/sign-up")
+    public ResponseEntity<?> verifySignUp(@RequestBody OtpRequest request) {
+        return ResponseEntity.ok(handymanAuthenticationService.verifySignUp(request));
+    }
+
     @PostMapping("/sign-in")
     public ResponseEntity<?> signIn(@RequestBody UserSignInRequest request) {
         return ResponseEntity.ok(handymanAuthenticationService.signIn(request));
+    }
+
+    @PostMapping("/verify/sign-in")
+    public ResponseEntity<?> verifySignIn(@RequestBody OtpRequest request) {
+        return ResponseEntity.ok(handymanAuthenticationService.verifySignIn(request));
     }
 }

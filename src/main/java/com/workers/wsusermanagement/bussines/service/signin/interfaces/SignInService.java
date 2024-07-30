@@ -1,9 +1,9 @@
 package com.workers.wsusermanagement.bussines.service.signin.interfaces;
 
 import com.workers.wsusermanagement.bussines.service.signin.context.SignInContext;
-import com.workers.wsusermanagement.bussines.service.signin.model.SignInResponse;
+import com.workers.wsusermanagement.bussines.service.signup.model.SignUpResponse;
 
 public interface SignInService {
 
-    SignInResponse doProcess(SignInContext ctx);
+    SignUpResponse doProcess(SignInContext ctx);
 }
