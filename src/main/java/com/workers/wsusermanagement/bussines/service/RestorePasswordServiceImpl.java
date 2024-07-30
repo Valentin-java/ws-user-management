@@ -6,9 +6,9 @@ import com.workers.wsusermanagement.bussines.service.resetpass.interfaces.ResetP
 import com.workers.wsusermanagement.bussines.service.resetpass.model.ResetPasswordResponse;
 import com.workers.wsusermanagement.bussines.service.setpass.interfaces.ChangePasswordService;
 import com.workers.wsusermanagement.bussines.service.signin.model.SignInResponse;
+import com.workers.wsusermanagement.rest.inbound.dto.ChangePasswordRequest;
 import com.workers.wsusermanagement.rest.inbound.dto.OtpRequest;
-import com.workers.wsusermanagement.rest.inbound.dto.ResetUserPasswordRequest;
-import com.workers.wsusermanagement.rest.inbound.dto.UserSignUpRequest;
+import com.workers.wsusermanagement.rest.inbound.dto.ResetPasswordInitRequest;
 import com.workers.wsusermanagement.rest.inbound.mapper.ChangePasswordMapper;
 import com.workers.wsusermanagement.rest.inbound.mapper.ConfirmationOtpMapper;
 import com.workers.wsusermanagement.rest.inbound.mapper.ResetPasswordMapper;
@@ -28,19 +28,19 @@ import static org.springframework.http.HttpStatus.BAD_REQUEST;
 public class RestorePasswordServiceImpl implements RestorePasswordService {
 
     private final ResetPasswordMapper resetPasswordMapper;
-    private final ConfirmationOtpMapper confirmationOtpMapper;
-    private final ChangePasswordMapper changePasswordMapper;
     private final ResetPasswordService resetPasswordService;
+    private final ConfirmationOtpMapper confirmationOtpMapper;
     private final ConfirmationOtpService confirmationOtpService;
+    private final ChangePasswordMapper changePasswordMapper;
     private final ChangePasswordService changePasswordService;
 
     /**
-     * Здесь все проверим, деактивируем пользователя, сбросим пароль и отправим отп для восстановления.
+     * Здесь все проверим, сбросим пароль и отправим отп для восстановления.
      * @param request
      * @return
      */
     @Override
-    public ResetPasswordResponse resetPasswordByOtp(ResetUserPasswordRequest request) {
+    public ResetPasswordResponse resetPasswordByOtp(ResetPasswordInitRequest request) {
         return Optional.of(request)
                 .map(resetPasswordMapper::toServiceContext)
                 .map(resetPasswordService::doProcess)
@@ -69,12 +69,10 @@ public class RestorePasswordServiceImpl implements RestorePasswordService {
      * @return
      */
     @Override
-    public SignInResponse setPasswordByOtp(UserSignUpRequest request) {
+    public SignInResponse setPasswordByOtp(ChangePasswordRequest request) {
         return Optional.of(request)
                 .map(changePasswordMapper::toServiceContext)
                 .map(changePasswordService::doProcess)
                 .orElseThrow(() -> new ResponseStatusException(BAD_REQUEST, UNEXPECTED_ERROR_MESSAGE));
     }
-
-    // TODO blocked статус поставить на шедулер на 24 часа
 }

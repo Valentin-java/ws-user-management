@@ -47,7 +47,7 @@ public class AuthService {
 
     private String fetchNewToken() {
         try {
-            var request = new AuthRequest(credentialProps.getUsername(), credentialProps.getPassword());
+            var request = new AuthRequest(credentialProps.getUsername(), credentialProps.getPassword(), false);
             var response = restTemplate.postForObject(credentialProps.getAuthUrl(), request, AuthResponse.class);
             return response.accessToken();
         } catch (Exception ex) {

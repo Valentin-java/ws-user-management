@@ -1,9 +1,9 @@
 package com.workers.wsusermanagement.rest.inbound.controller;
 
 import com.workers.wsusermanagement.bussines.interfaces.RestorePasswordService;
+import com.workers.wsusermanagement.rest.inbound.dto.ChangePasswordRequest;
 import com.workers.wsusermanagement.rest.inbound.dto.OtpRequest;
-import com.workers.wsusermanagement.rest.inbound.dto.ResetUserPasswordRequest;
-import com.workers.wsusermanagement.rest.inbound.dto.UserSignUpRequest;
+import com.workers.wsusermanagement.rest.inbound.dto.ResetPasswordInitRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,7 +19,7 @@ public class RestorePasswordController {
     private final RestorePasswordService restorePasswordService;
 
     @PostMapping("/reset")
-    public ResponseEntity<?> resetPasswordByOtp(@RequestBody ResetUserPasswordRequest request) {
+    public ResponseEntity<?> resetPasswordByOtp(@RequestBody ResetPasswordInitRequest request) {
         return ResponseEntity.ok(restorePasswordService.resetPasswordByOtp(request));
     }
 
@@ -29,7 +29,7 @@ public class RestorePasswordController {
     }
 
     @PostMapping("/setpass")
-    public ResponseEntity<?> setPasswordByOtp(@RequestBody UserSignUpRequest request) {
+    public ResponseEntity<?> setPasswordByOtp(@RequestBody ChangePasswordRequest request) {
         return ResponseEntity.ok(restorePasswordService.setPasswordByOtp(request));
     }
 }

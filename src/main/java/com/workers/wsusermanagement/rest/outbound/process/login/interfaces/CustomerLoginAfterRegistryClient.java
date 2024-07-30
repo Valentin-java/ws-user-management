@@ -1,8 +1,8 @@
-package com.workers.wsusermanagement.rest.outbound.process.registry.interfaces;
+package com.workers.wsusermanagement.rest.outbound.process.login.interfaces;
 
 import com.workers.wsusermanagement.bussines.service.signup.context.VerifySignUpContext;
 
-public interface UserRegistryProcessFeignClient {
+public interface CustomerLoginAfterRegistryClient {
 
     VerifySignUpContext requestToExecuteByService(VerifySignUpContext ctx);
 }

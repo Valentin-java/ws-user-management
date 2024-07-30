@@ -1,10 +1,10 @@
 package com.workers.wsusermanagement.rest.outbound.process.notification.client;
 
-import com.workers.wsusermanagement.bussines.service.resetpass.context.ResetPasswordContext;
+import com.workers.wsusermanagement.bussines.service.signup.context.SignUpContext;
 import com.workers.wsusermanagement.rest.outbound.feign.WsNotificationServiceFeign;
 import com.workers.wsusermanagement.rest.outbound.mapper.NotificationRequestMapper;
 import com.workers.wsusermanagement.rest.outbound.process.AbstractProcessFeignClient;
-import com.workers.wsusermanagement.rest.outbound.process.notification.interfaces.SenOtpNotificationFeignClient;
+import com.workers.wsusermanagement.rest.outbound.process.notification.interfaces.SendSignUpOtpNotificationClient;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -16,22 +16,22 @@ import static org.springframework.http.HttpStatus.BAD_REQUEST;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class SenOtpNotificationFeignClientImpl
-        extends AbstractProcessFeignClient<ResetPasswordContext>
-        implements SenOtpNotificationFeignClient {
+public class SendSignUpOtpNotificationClientImpl
+        extends AbstractProcessFeignClient<SignUpContext>
+        implements SendSignUpOtpNotificationClient {
 
     private final WsNotificationServiceFeign wsNotificationServiceFeign;
     private final NotificationRequestMapper notificationRequestMapper;
 
     @Override
-    protected ResetPasswordContext mappingToRequest(ResetPasswordContext ctx) {
+    protected SignUpContext mappingToRequest(SignUpContext ctx) {
         var notificationRequest = notificationRequestMapper.toNotificationRequest(ctx);
         ctx.setNotificationRequest(notificationRequest);
         return ctx;
     }
 
     @Override
-    protected ResetPasswordContext doRequest(ResetPasswordContext ctx) {
+    protected SignUpContext doRequest(SignUpContext ctx) {
         try {
             wsNotificationServiceFeign.sendNotificationMessage(ctx.getNotificationRequest());
             return ctx;

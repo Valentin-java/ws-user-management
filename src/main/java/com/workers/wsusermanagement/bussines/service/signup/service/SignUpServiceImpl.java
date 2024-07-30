@@ -2,14 +2,14 @@ package com.workers.wsusermanagement.bussines.service.signup.service;
 
 import com.workers.wsusermanagement.bussines.service.signup.context.SignUpContext;
 import com.workers.wsusermanagement.bussines.service.signup.interfaces.SignUpService;
-import com.workers.wsusermanagement.bussines.service.validation.signup.SignUpValidationService;
-import com.workers.wsusermanagement.persistence.enums.ActivityStatus;
-import com.workers.wsusermanagement.persistence.mapper.CustomerMapper;
-import com.workers.wsusermanagement.persistence.repository.UserProfileRepository;
 import com.workers.wsusermanagement.bussines.service.signup.model.SignUpResponse;
-import com.workers.wsusermanagement.rest.outbound.process.activation.interfaces.UserActivationProcessFeignClient;
-import com.workers.wsusermanagement.rest.outbound.process.assignrole.interfaces.UserAssignRoleProcessFeignClient;
-import com.workers.wsusermanagement.rest.outbound.process.registry.interfaces.UserRegistryProcessFeignClient;
+import com.workers.wsusermanagement.persistence.enums.ActivityStatus;
+import com.workers.wsusermanagement.persistence.enums.StatusOtp;
+import com.workers.wsusermanagement.persistence.mapper.CustomerMapper;
+import com.workers.wsusermanagement.persistence.mapper.OtpEntityMapper;
+import com.workers.wsusermanagement.persistence.repository.OtpEntityRepository;
+import com.workers.wsusermanagement.persistence.repository.UserProfileRepository;
+import com.workers.wsusermanagement.rest.outbound.process.notification.interfaces.SendSignUpOtpNotificationClient;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -25,37 +25,38 @@ import static org.springframework.http.HttpStatus.BAD_REQUEST;
 @RequiredArgsConstructor
 public class SignUpServiceImpl implements SignUpService {
 
-    private final UserRegistryProcessFeignClient userRegistryProcessFeignClient;
-    private final UserAssignRoleProcessFeignClient userAssignRoleProcessFeignClient;
-    private final UserActivationProcessFeignClient userActivationProcessFeignClient;
+    private final SendSignUpOtpNotificationClient senOtpNotificationFeignClient;
     private final UserProfileRepository userProfileRepository;
-    private final SignUpValidationService validationService;
+    private final OtpEntityRepository otpEntityRepository;
+    private final OtpEntityMapper otpEntityMapper;
     private final CustomerMapper customerMapper;
 
     @Override
     public SignUpResponse doProcess(SignUpContext ctx) {
         return Optional.of(ctx)
-                .map(this::validateRequest)
                 .map(this::validateUniqueCustomer)
-                .map(userRegistryProcessFeignClient::requestToExecuteByService)
+                .map(this::validateUserStatus)
                 .map(this::createCustomerProfile)
-                .map(userAssignRoleProcessFeignClient::requestToExecuteByService)
-                .map(userActivationProcessFeignClient::requestToExecuteByService)
-                .map(this::activationCustomerProfile)
+                .map(this::deactivateOtherOtp)
+                .map(this::createOtpEntity)
+                .map(senOtpNotificationFeignClient::requestToExecuteByService)
                 .map(this::createResponse)
                 .orElseThrow(() -> new ResponseStatusException(BAD_REQUEST, UNEXPECTED_ERROR_MESSAGE));
-    }
-
-    private SignUpContext validateRequest(SignUpContext ctx) {
-        validationService.validate(ctx.getRequest());
-        return ctx;
     }
 
     private SignUpContext validateUniqueCustomer(SignUpContext request) {
         if (!userProfileRepository.existsUserProfileByUsername(request.getRequest().phoneNumber())) {
             return request;
         }
-        throw new ResponseStatusException(BAD_REQUEST, "Пользователь в системе уже существует");
+        throw new ResponseStatusException(BAD_REQUEST, "Пользователь уже существует");
+    }
+
+    private SignUpContext validateUserStatus(SignUpContext request) {
+        if (!userProfileRepository.existsUserProfileByUsernameAndActivityStatus(
+                request.getRequest().phoneNumber(), ActivityStatus.ACTIVE)) {
+            return request;
+        }
+        throw new ResponseStatusException(BAD_REQUEST, "Пользователь уже активирован");
     }
 
     private SignUpContext createCustomerProfile(SignUpContext ctx) {
@@ -64,16 +65,22 @@ public class SignUpServiceImpl implements SignUpService {
         return ctx;
     }
 
-    private SignUpContext activationCustomerProfile(SignUpContext ctx) {
-        var userProfile = userProfileRepository.findByUsername(ctx.getRequest().phoneNumber())
-                .orElseThrow(() -> new ResponseStatusException(BAD_REQUEST, UNEXPECTED_ERROR_MESSAGE));
-        userProfile.setActivityStatus(ActivityStatus.ACTIVE);
-        userProfileRepository.save(userProfile);
+    private SignUpContext deactivateOtherOtp(SignUpContext ctx) {
+        var otpEntityList = otpEntityRepository.findAllByUsername(ctx.getRequest().phoneNumber());
+        otpEntityList.forEach(otp -> otp.setStatusOtp(StatusOtp.DECLINED));
 
+        otpEntityRepository.saveAll(otpEntityList);
+        return ctx;
+    }
+
+    private SignUpContext createOtpEntity(SignUpContext ctx) {
+        var otpEntity = otpEntityMapper.toSignUpOtpEntity(ctx);
+        ctx.setOtpEntity(otpEntity);
+        otpEntityRepository.save(otpEntity);
         return ctx;
     }
 
     private SignUpResponse createResponse(SignUpContext ctx) {
-        return new SignUpResponse(ctx.getRequest().phoneNumber(), "Пользователь успешно зарегистрирован");
+        return new SignUpResponse(ctx.getOtpEntity().getUuid());
     }
 }

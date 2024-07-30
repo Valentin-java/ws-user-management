@@ -1,25 +1,42 @@
 package com.workers.wsusermanagement.bussines.service;
 
 import com.workers.wsusermanagement.bussines.interfaces.CustomerAuthenticationService;
+import com.workers.wsusermanagement.bussines.service.signin.context.SignInContext;
+import com.workers.wsusermanagement.bussines.service.signin.context.VerifySignInContext;
 import com.workers.wsusermanagement.bussines.service.signin.interfaces.SignInService;
+import com.workers.wsusermanagement.bussines.service.signin.interfaces.VerifySignInService;
 import com.workers.wsusermanagement.bussines.service.signup.context.SignUpContext;
+import com.workers.wsusermanagement.bussines.service.signup.context.VerifySignUpContext;
 import com.workers.wsusermanagement.bussines.service.signup.interfaces.SignUpService;
+import com.workers.wsusermanagement.bussines.service.signup.interfaces.VerifySignUpService;
+import com.workers.wsusermanagement.rest.inbound.dto.OtpRequest;
+import com.workers.wsusermanagement.rest.inbound.dto.UserSignInRequest;
 import com.workers.wsusermanagement.rest.inbound.dto.UserSignUpRequest;
 import com.workers.wsusermanagement.rest.inbound.mapper.SignInMapper;
 import com.workers.wsusermanagement.rest.inbound.mapper.SignUpMapper;
+import com.workers.wsusermanagement.rest.inbound.mapper.VerifySignUpMapper;
 import org.springframework.stereotype.Service;
 
 @Service
-public class CustomerAuthenticationServiceImpl extends AbstractUserAuthenticationService implements CustomerAuthenticationService {
+public class CustomerAuthenticationServiceImpl
+        extends AbstractUserAuthenticationService
+        implements CustomerAuthenticationService {
 
     private final SignUpMapper signUpMapper;
+    private final VerifySignUpMapper verifySignUpMapper;
+    private final SignInMapper signInMapper;
 
     public CustomerAuthenticationServiceImpl(SignUpService signUpService,
+                                             VerifySignUpService verifySignUpService,
                                              SignInService signInService,
+                                             VerifySignInService verifySignInService,
                                              SignUpMapper signUpMapper,
-                                             SignInMapper signInMapper) {
-        super(signUpService, signInService, signInMapper);
+                                             SignInMapper signInMapper,
+                                             VerifySignUpMapper verifySignUpMapper) {
+        super(signUpService, verifySignUpService, signInService, verifySignInService);
         this.signUpMapper = signUpMapper;
+        this.verifySignUpMapper = verifySignUpMapper;
+        this.signInMapper = signInMapper;
     }
 
     @Override
@@ -27,20 +44,18 @@ public class CustomerAuthenticationServiceImpl extends AbstractUserAuthenticatio
         return signUpMapper.toCustomerServiceContext(request);
     }
 
+    @Override
+    protected VerifySignUpContext mapToVerifySignUpContext(OtpRequest request) {
+        return verifySignUpMapper.toCustomerServiceContext(request);
+    }
 
-    //2. Задача
-    // редактирование профиля - здесь для реализации будет один сервис
+    @Override
+    protected SignInContext mapToSignInContext(UserSignInRequest request) {
+        return signInMapper.toServiceContext(request);
+    }
 
-    //3. Задача
-    // получение данных профиля - просто список разрешенныых полей UserProfile
-
-    //4. Задача
-    // дополнительная активация - на случай, если с первого раза не удалось активировать пользователя.
-    // Например не пришло смс.
-    // То есть при попытке пользователя войти, будет висеть предупреждение, о том что не произошла активация профиля
-    // и кнопка попробовать активировать еще раз
-
-    // отдебажить все auth процессы
-// проверить как передаются значения в заголовках
-// настроить ограничения в по правам
+    @Override
+    protected VerifySignInContext mapToVerifySignInContext(OtpRequest request) {
+        return signInMapper.toVerifyServiceContext(request);
+    }
 }

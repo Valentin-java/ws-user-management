@@ -13,19 +13,19 @@ import org.mapstruct.Named;
 public interface SignUpMapper {
 
     @Mapping(target = "request.phoneNumber", source = "phoneNumber", qualifiedByName = "FormatPhoneNumber")
-    @Mapping(target = "request.password", source = "password")
+    @Mapping(target = "request.firstName", source = "firstName")
     @Mapping(target = "request.activityStatus", source = ".", qualifiedByName = "getActivityStatus")
     @Mapping(target = "request.customerRole", source = ".", qualifiedByName = "getCustomerRole")
-    @Mapping(target = "authRequest", ignore = true)
-    @Mapping(target = "assignRoleRequest", ignore = true)
+    @Mapping(target = "notificationRequest", ignore = true)
+    @Mapping(target = "otpEntity", ignore = true)
     SignUpContext toCustomerServiceContext(UserSignUpRequest request);
 
     @Mapping(target = "request.phoneNumber", source = "phoneNumber", qualifiedByName = "FormatPhoneNumber")
-    @Mapping(target = "request.password", source = "password")
+    @Mapping(target = "request.firstName", source = "firstName")
     @Mapping(target = "request.activityStatus", source = ".", qualifiedByName = "getActivityStatus")
     @Mapping(target = "request.customerRole", source = ".", qualifiedByName = "getHandymanRole")
-    @Mapping(target = "authRequest", ignore = true)
-    @Mapping(target = "assignRoleRequest", ignore = true)
+    @Mapping(target = "notificationRequest", ignore = true)
+    @Mapping(target = "otpEntity", ignore = true)
     SignUpContext toHandymanServiceContext(UserSignUpRequest request);
 
     @Named("getActivityStatus")

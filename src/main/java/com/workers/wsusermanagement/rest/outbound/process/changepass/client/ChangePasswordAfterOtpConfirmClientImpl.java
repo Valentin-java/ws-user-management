@@ -4,7 +4,7 @@ import com.workers.wsusermanagement.bussines.service.setpass.context.ChangePassw
 import com.workers.wsusermanagement.rest.outbound.feign.WsAuthFeign;
 import com.workers.wsusermanagement.rest.outbound.mapper.AuthRequestMapper;
 import com.workers.wsusermanagement.rest.outbound.process.AbstractProcessFeignClient;
-import com.workers.wsusermanagement.rest.outbound.process.changepass.interfaces.ChangePasswordProcessFeignClient;
+import com.workers.wsusermanagement.rest.outbound.process.changepass.interfaces.ChangePasswordAfterOtpConfirmClient;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -16,16 +16,16 @@ import static org.springframework.http.HttpStatus.BAD_REQUEST;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class ChangePasswordProcessFeignClientImpl
+public class ChangePasswordAfterOtpConfirmClientImpl
         extends AbstractProcessFeignClient<ChangePasswordContext>
-        implements ChangePasswordProcessFeignClient {
+        implements ChangePasswordAfterOtpConfirmClient {
 
     private final WsAuthFeign wsAuthFeign;
     private final AuthRequestMapper authRequestMapper;
 
     @Override
     protected ChangePasswordContext mappingToRequest(ChangePasswordContext ctx) {
-        var authRequest = authRequestMapper.toAuthRequest(ctx.getRequest());
+        var authRequest = authRequestMapper.toAuthRequest(ctx);
         ctx.setAuthRequest(authRequest);
         return ctx;
     }
@@ -33,7 +33,7 @@ public class ChangePasswordProcessFeignClientImpl
     @Override
     protected ChangePasswordContext doRequest(ChangePasswordContext ctx) {
         try {
-            wsAuthFeign.requestToResetPassword(ctx.getAuthRequest());
+            wsAuthFeign.requestToChangePassword(ctx.getAuthRequest());
             return ctx;
         } catch (Exception ex) {
             throw new ResponseStatusException(BAD_REQUEST, getSpecificMessage(ex));

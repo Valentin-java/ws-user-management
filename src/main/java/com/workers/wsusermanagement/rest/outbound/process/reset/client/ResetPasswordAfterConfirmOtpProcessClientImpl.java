@@ -4,7 +4,7 @@ import com.workers.wsusermanagement.bussines.service.confirmotp.context.Confirma
 import com.workers.wsusermanagement.rest.outbound.feign.WsAuthFeign;
 import com.workers.wsusermanagement.rest.outbound.mapper.AuthRequestMapper;
 import com.workers.wsusermanagement.rest.outbound.process.AbstractProcessFeignClient;
-import com.workers.wsusermanagement.rest.outbound.process.reset.interfaces.ResetPasswordProcessFeignClient;
+import com.workers.wsusermanagement.rest.outbound.process.reset.interfaces.ResetPasswordAfterConfirmOtpProcessClient;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -16,16 +16,16 @@ import static org.springframework.http.HttpStatus.BAD_REQUEST;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class ResetPasswordProcessFeignClientImpl
+public class ResetPasswordAfterConfirmOtpProcessClientImpl
         extends AbstractProcessFeignClient<ConfirmationOtpContext>
-        implements ResetPasswordProcessFeignClient {
+        implements ResetPasswordAfterConfirmOtpProcessClient {
 
     private final WsAuthFeign wsAuthFeign;
     private final AuthRequestMapper authRequestMapper;
 
     @Override
     protected ConfirmationOtpContext mappingToRequest(ConfirmationOtpContext ctx) {
-        var authRequest = authRequestMapper.toAuthRequest(ctx.getRequest());
+        var authRequest = authRequestMapper.toAuthRequest(ctx);
         ctx.setAuthRequest(authRequest);
         return ctx;
     }

@@ -1,13 +1,14 @@
-package com.workers.wsusermanagement.bussines.service.confirmotp.service;
+package com.workers.wsusermanagement.bussines.service.signin.service;
 
-import com.workers.wsusermanagement.bussines.service.confirmotp.context.ConfirmationOtpContext;
-import com.workers.wsusermanagement.bussines.service.confirmotp.interfaces.ConfirmationOtpService;
-import com.workers.wsusermanagement.bussines.service.resetpass.model.ResetPasswordResponse;
+import com.workers.wsusermanagement.bussines.service.signin.context.VerifySignInContext;
+import com.workers.wsusermanagement.bussines.service.signin.interfaces.VerifySignInService;
+import com.workers.wsusermanagement.bussines.service.signin.model.SignInResponse;
 import com.workers.wsusermanagement.persistence.entity.OtpEntity;
+import com.workers.wsusermanagement.persistence.enums.ActivityStatus;
 import com.workers.wsusermanagement.persistence.enums.StatusOtp;
 import com.workers.wsusermanagement.persistence.repository.OtpEntityRepository;
 import com.workers.wsusermanagement.persistence.repository.UserProfileRepository;
-import com.workers.wsusermanagement.rest.outbound.process.reset.interfaces.ResetPasswordAfterConfirmOtpProcessClient;
+import com.workers.wsusermanagement.rest.outbound.process.login.interfaces.CustomerLoginProcessFeignClient;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -23,30 +24,31 @@ import static org.springframework.http.HttpStatus.BAD_REQUEST;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class ConfirmationOtpServiceImpl implements ConfirmationOtpService {
+public class VerifySignInServiceImpl implements VerifySignInService {
 
-    private final ResetPasswordAfterConfirmOtpProcessClient resetPasswordAfterConfirmOtpProcessClient;
+    private final CustomerLoginProcessFeignClient customerLoginProcessFeignClient;
     private final UserProfileRepository userProfileRepository;
     private final OtpEntityRepository otpEntityRepository;
     private static final Integer TTL_OTP_MINS = 3;
 
     @Override
-    public ResetPasswordResponse doProcess(ConfirmationOtpContext ctx) {
+    public SignInResponse doProcess(VerifySignInContext ctx) {
         return Optional.of(ctx)
                 .map(this::findOtpByUuid)
                 .map(this::validateDeclineStatusOtp)
                 .map(this::validateTTL)
                 .map(this::findUserProfile)
                 .map(this::compareOtp)
+                .map(this::activateStatusUserProfile)
 
-                .map(resetPasswordAfterConfirmOtpProcessClient::requestToExecuteByService)
+                .map(customerLoginProcessFeignClient::requestToExecuteByService)
 
                 .map(this::updateVisitDate)
-                .map(this::createResetPasswordResponse)
+                .map(this::createResponse)
                 .orElseThrow(() -> new ResponseStatusException(BAD_REQUEST, UNEXPECTED_ERROR_MESSAGE));
     }
 
-    private ConfirmationOtpContext findOtpByUuid(ConfirmationOtpContext ctx) {
+    private VerifySignInContext findOtpByUuid(VerifySignInContext ctx) {
         var otpEntity = otpEntityRepository.findAllByUuid(ctx.getRequest().uuid())
                 .stream()
                 .max(Comparator.comparing(OtpEntity::getCreatedAt))
@@ -56,14 +58,14 @@ public class ConfirmationOtpServiceImpl implements ConfirmationOtpService {
         return ctx;
     }
 
-    private ConfirmationOtpContext validateDeclineStatusOtp(ConfirmationOtpContext ctx) {
+    private VerifySignInContext validateDeclineStatusOtp(VerifySignInContext ctx) {
         if (StatusOtp.DECLINED.equals(ctx.getOtpEntity().getStatusOtp())) {
             throw new ResponseStatusException(BAD_REQUEST, "Одноразовый пароль отклонен");
         }
         return ctx;
     }
 
-    private ConfirmationOtpContext validateTTL(ConfirmationOtpContext ctx) {
+    private VerifySignInContext validateTTL(VerifySignInContext ctx) {
         LocalDateTime createdAt = ctx.getOtpEntity().getCreatedAt();
         LocalDateTime expiresAt = createdAt.plusMinutes(TTL_OTP_MINS);
 
@@ -75,14 +77,15 @@ public class ConfirmationOtpServiceImpl implements ConfirmationOtpService {
         return ctx;
     }
 
-    private ConfirmationOtpContext findUserProfile(ConfirmationOtpContext ctx) {
+    private VerifySignInContext findUserProfile(VerifySignInContext ctx) {
         var userProfile = userProfileRepository.findByUsername(ctx.getOtpEntity().getUsername())
-                .orElseThrow(() -> new ResponseStatusException(BAD_REQUEST, "Пользователь в системе не существует"));
+                .orElseThrow(() -> new ResponseStatusException(BAD_REQUEST, "Пользователь для данного одноразового пароля не найден"));
+
         ctx.setUserProfile(userProfile);
         return ctx;
     }
 
-    private ConfirmationOtpContext compareOtp(ConfirmationOtpContext ctx) {
+    private VerifySignInContext compareOtp(VerifySignInContext ctx) {
         String actualOtp = ctx.getOtpEntity().getOtp();
         String enteredOtp = ctx.getRequest().otp();
 
@@ -94,14 +97,22 @@ public class ConfirmationOtpServiceImpl implements ConfirmationOtpService {
         throw new ResponseStatusException(BAD_REQUEST, "Отп не верный");
     }
 
-    private ConfirmationOtpContext updateVisitDate(ConfirmationOtpContext ctx) {
+    private VerifySignInContext activateStatusUserProfile(VerifySignInContext ctx) {
+        if (ActivityStatus.INACTIVE.equals(ctx.getUserProfile().getActivityStatus())) {
+            ctx.getUserProfile().setActivityStatus(ActivityStatus.ACTIVE);
+            return ctx;
+        }
+        return ctx;
+    }
+
+    private VerifySignInContext updateVisitDate(VerifySignInContext ctx) {
         var userProfile = ctx.getUserProfile();
         userProfile.setLastVisitAt(LocalDateTime.now());
         userProfileRepository.save(userProfile);
         return ctx;
     }
 
-    private ResetPasswordResponse createResetPasswordResponse(ConfirmationOtpContext ctx) {
-        return new ResetPasswordResponse(ctx.getOtpEntity().getUuid());
+    private SignInResponse createResponse(VerifySignInContext ctx) {
+        return ctx.getSignInResponse();
     }
 }

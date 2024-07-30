@@ -1,11 +1,11 @@
 package com.workers.wsusermanagement.rest.outbound.process.login.client;
 
-import com.workers.wsusermanagement.bussines.service.signin.context.VerifySignInContext;
 import com.workers.wsusermanagement.bussines.service.signin.model.SignInResponse;
+import com.workers.wsusermanagement.bussines.service.signup.context.VerifySignUpContext;
 import com.workers.wsusermanagement.rest.outbound.feign.WsAuthFeign;
 import com.workers.wsusermanagement.rest.outbound.mapper.AuthRequestMapper;
 import com.workers.wsusermanagement.rest.outbound.process.AbstractProcessFeignClient;
-import com.workers.wsusermanagement.rest.outbound.process.login.interfaces.CustomerLoginProcessFeignClient;
+import com.workers.wsusermanagement.rest.outbound.process.login.interfaces.CustomerLoginAfterRegistryClient;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -17,15 +17,15 @@ import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class CustomerLoginProcessFeignClientImpl
-        extends AbstractProcessFeignClient<VerifySignInContext>
-        implements CustomerLoginProcessFeignClient {
+public class CustomerLoginAfterRegistryClientImpl
+        extends AbstractProcessFeignClient<VerifySignUpContext>
+        implements CustomerLoginAfterRegistryClient {
 
     private final WsAuthFeign wsAuthFeign;
     private final AuthRequestMapper authRequestMapper;
 
     @Override
-    protected VerifySignInContext mappingToRequest(VerifySignInContext ctx) {
+    protected VerifySignUpContext mappingToRequest(VerifySignUpContext ctx) {
         if (ctx.getAuthRequest() == null) {
             var authRequest = authRequestMapper.toAuthRequest(ctx);
             ctx.setAuthRequest(authRequest);
@@ -34,7 +34,7 @@ public class CustomerLoginProcessFeignClientImpl
     }
 
     @Override
-    protected VerifySignInContext doRequest(VerifySignInContext ctx) {
+    protected VerifySignUpContext doRequest(VerifySignUpContext ctx) {
         try {
             var response = wsAuthFeign.createAuthenticationToken(ctx.getAuthRequest());
             var responseBody = response.getBody() != null ? response.getBody() : null;
