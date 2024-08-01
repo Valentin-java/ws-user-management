@@ -101,6 +101,8 @@ public class ChangePasswordServiceImpl implements ChangePasswordService {
     }
 
     private SignInResponse createResponse(SignInByOtpContext ctx) {
+        ctx.getUserProfile().setOtp(false);
+        userProfileRepository.save(ctx.getUserProfile());
         return ctx.getSignInResponse();
     }
 }

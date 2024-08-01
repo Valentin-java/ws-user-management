@@ -48,13 +48,4 @@ public class CustomerAuthenticationController {
     public ResponseEntity<?> signInByPassword(@RequestBody PasswordRequest request) {
         return ResponseEntity.ok(customerAuthenticationService.signInByPassword(request));
     }
-
-    // Установить пароль из профиля пользователя
-    @PostMapping("/pass/set-new-pass")
-    public ResponseEntity<?> setNewPassword(@RequestBody OtpRequest request) {
-        return ResponseEntity.ok(customerAuthenticationService.setNewPassword(request));
-    }
-
-    // Ручка для логина по паролю
-    // ну и соотвественно на ЭФ ввода именно пароля будет ссылка на сброс пароля
 }

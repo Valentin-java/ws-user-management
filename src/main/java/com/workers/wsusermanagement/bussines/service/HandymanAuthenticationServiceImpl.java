@@ -5,6 +5,7 @@ import com.workers.wsusermanagement.bussines.service.signin.context.SignInByOtpC
 import com.workers.wsusermanagement.bussines.service.signin.context.SignInByPassContext;
 import com.workers.wsusermanagement.bussines.service.signin.context.SignInContext;
 import com.workers.wsusermanagement.bussines.service.signin.interfaces.SignInByOtpService;
+import com.workers.wsusermanagement.bussines.service.signin.interfaces.SignInByPasswordService;
 import com.workers.wsusermanagement.bussines.service.signin.interfaces.SignInService;
 import com.workers.wsusermanagement.bussines.service.signup.context.SignUpContext;
 import com.workers.wsusermanagement.bussines.service.signup.context.VerifySignUpContext;
@@ -34,8 +35,9 @@ public class HandymanAuthenticationServiceImpl
                                              SignInByOtpService signInByOtpService,
                                              SignUpMapper signUpMapper,
                                              SignInMapper signInMapper,
-                                             VerifySignUpMapper verifySignUpMapper) {
-        super(signUpService, verifySignUpService, signInService, signInByOtpService);
+                                             VerifySignUpMapper verifySignUpMapper,
+                                             SignInByPasswordService signInByPasswordService) {
+        super(signUpService, verifySignUpService, signInService, signInByOtpService, signInByPasswordService);
         this.signUpMapper = signUpMapper;
         this.verifySignUpMapper = verifySignUpMapper;
         this.signInMapper = signInMapper;
