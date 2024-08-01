@@ -1,9 +1,9 @@
 package com.workers.wsusermanagement.rest.inbound.controller;
 
 import com.workers.wsusermanagement.bussines.interfaces.HandymanAuthenticationService;
+import com.workers.wsusermanagement.rest.inbound.dto.LoginUserDtoRequest;
 import com.workers.wsusermanagement.rest.inbound.dto.OtpRequest;
-import com.workers.wsusermanagement.rest.inbound.dto.UserSignInRequest;
-import com.workers.wsusermanagement.rest.inbound.dto.UserSignUpRequest;
+import com.workers.wsusermanagement.rest.inbound.dto.RegistryUserDtoRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,7 +19,7 @@ public class HandymanAuthenticationController {
     private final HandymanAuthenticationService handymanAuthenticationService;
 
     @PostMapping("/sign-up")
-    public ResponseEntity<?> signUp(@RequestBody UserSignUpRequest request) {
+    public ResponseEntity<?> signUp(@RequestBody RegistryUserDtoRequest request) {
         return ResponseEntity.ok(handymanAuthenticationService.signUp(request));
     }
 
@@ -29,7 +29,7 @@ public class HandymanAuthenticationController {
     }
 
     @PostMapping("/sign-in")
-    public ResponseEntity<?> signIn(@RequestBody UserSignInRequest request) {
+    public ResponseEntity<?> signIn(@RequestBody LoginUserDtoRequest request) {
         return ResponseEntity.ok(handymanAuthenticationService.signIn(request));
     }
 

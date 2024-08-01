@@ -28,3 +28,6 @@ public class UserProfileController {
 //        return ResponseEntity.ok(userProfileService.updateProfileData(request));
 //    }
 }
+
+// Кнопка - назначить пароль, в профиле покажется, если отп тру, пользователь активный
+// если отп false то получается пароль уже был задан, второй раз его нельзя задать только сбросить при логине

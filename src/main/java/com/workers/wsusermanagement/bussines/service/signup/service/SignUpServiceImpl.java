@@ -2,7 +2,7 @@ package com.workers.wsusermanagement.bussines.service.signup.service;
 
 import com.workers.wsusermanagement.bussines.service.signup.context.SignUpContext;
 import com.workers.wsusermanagement.bussines.service.signup.interfaces.SignUpService;
-import com.workers.wsusermanagement.bussines.service.signup.model.SignUpResponse;
+import com.workers.wsusermanagement.bussines.service.signup.model.RegistryUserResponse;
 import com.workers.wsusermanagement.persistence.enums.ActivityStatus;
 import com.workers.wsusermanagement.persistence.enums.StatusOtp;
 import com.workers.wsusermanagement.persistence.mapper.CustomerMapper;
@@ -32,7 +32,7 @@ public class SignUpServiceImpl implements SignUpService {
     private final CustomerMapper customerMapper;
 
     @Override
-    public SignUpResponse doProcess(SignUpContext ctx) {
+    public RegistryUserResponse doProcess(SignUpContext ctx) {
         return Optional.of(ctx)
                 .map(this::validateUniqueCustomer)
                 .map(this::validateUserStatus)
@@ -80,7 +80,7 @@ public class SignUpServiceImpl implements SignUpService {
         return ctx;
     }
 
-    private SignUpResponse createResponse(SignUpContext ctx) {
-        return new SignUpResponse(ctx.getOtpEntity().getUuid());
+    private RegistryUserResponse createResponse(SignUpContext ctx) {
+        return new RegistryUserResponse(ctx.getOtpEntity().getUuid());
     }
 }

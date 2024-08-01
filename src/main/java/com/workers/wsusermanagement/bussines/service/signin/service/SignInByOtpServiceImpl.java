@@ -1,6 +1,6 @@
 package com.workers.wsusermanagement.bussines.service.signin.service;
 
-import com.workers.wsusermanagement.bussines.service.signin.context.VerifySignInContext;
+import com.workers.wsusermanagement.bussines.service.signin.context.SignInByOtpContext;
 import com.workers.wsusermanagement.bussines.service.signin.interfaces.SignInByOtpService;
 import com.workers.wsusermanagement.bussines.service.signin.model.SignInResponse;
 import com.workers.wsusermanagement.persistence.entity.OtpEntity;
@@ -8,7 +8,7 @@ import com.workers.wsusermanagement.persistence.enums.ActivityStatus;
 import com.workers.wsusermanagement.persistence.enums.StatusOtp;
 import com.workers.wsusermanagement.persistence.repository.OtpEntityRepository;
 import com.workers.wsusermanagement.persistence.repository.UserProfileRepository;
-import com.workers.wsusermanagement.rest.outbound.process.login.interfaces.CustomerLoginProcessFeignClient;
+import com.workers.wsusermanagement.rest.outbound.process.login.interfaces.CustomerLoginByOtpProcessClient;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -26,13 +26,13 @@ import static org.springframework.http.HttpStatus.BAD_REQUEST;
 @RequiredArgsConstructor
 public class SignInByOtpServiceImpl implements SignInByOtpService {
 
-    private final CustomerLoginProcessFeignClient customerLoginProcessFeignClient;
+    private final CustomerLoginByOtpProcessClient customerLoginByOtpProcessClient;
     private final UserProfileRepository userProfileRepository;
     private final OtpEntityRepository otpEntityRepository;
     private static final Integer TTL_OTP_MINS = 3;
 
     @Override
-    public SignInResponse doProcess(VerifySignInContext ctx) {
+    public SignInResponse doProcess(SignInByOtpContext ctx) {
         return Optional.of(ctx)
                 .map(this::findOtpByUuid)
                 .map(this::validateDeclineStatusOtp)
@@ -41,14 +41,14 @@ public class SignInByOtpServiceImpl implements SignInByOtpService {
                 .map(this::compareOtp)
                 .map(this::activateStatusUserProfile)
 
-                .map(customerLoginProcessFeignClient::requestToExecuteByService)
+                .map(customerLoginByOtpProcessClient::requestToExecuteByService)
 
                 .map(this::updateVisitDate)
                 .map(this::createResponse)
                 .orElseThrow(() -> new ResponseStatusException(BAD_REQUEST, UNEXPECTED_ERROR_MESSAGE));
     }
 
-    private VerifySignInContext findOtpByUuid(VerifySignInContext ctx) {
+    private SignInByOtpContext findOtpByUuid(SignInByOtpContext ctx) {
         var otpEntity = otpEntityRepository.findAllByUuid(ctx.getRequest().uuid())
                 .stream()
                 .max(Comparator.comparing(OtpEntity::getCreatedAt))
@@ -58,14 +58,14 @@ public class SignInByOtpServiceImpl implements SignInByOtpService {
         return ctx;
     }
 
-    private VerifySignInContext validateDeclineStatusOtp(VerifySignInContext ctx) {
+    private SignInByOtpContext validateDeclineStatusOtp(SignInByOtpContext ctx) {
         if (StatusOtp.DECLINED.equals(ctx.getOtpEntity().getStatusOtp())) {
             throw new ResponseStatusException(BAD_REQUEST, "Одноразовый пароль отклонен");
         }
         return ctx;
     }
 
-    private VerifySignInContext validateTTL(VerifySignInContext ctx) {
+    private SignInByOtpContext validateTTL(SignInByOtpContext ctx) {
         LocalDateTime createdAt = ctx.getOtpEntity().getCreatedAt();
         LocalDateTime expiresAt = createdAt.plusMinutes(TTL_OTP_MINS);
 
@@ -77,7 +77,7 @@ public class SignInByOtpServiceImpl implements SignInByOtpService {
         return ctx;
     }
 
-    private VerifySignInContext findUserProfile(VerifySignInContext ctx) {
+    private SignInByOtpContext findUserProfile(SignInByOtpContext ctx) {
         var userProfile = userProfileRepository.findByUsername(ctx.getOtpEntity().getUsername())
                 .orElseThrow(() -> new ResponseStatusException(BAD_REQUEST, "Пользователь для данного одноразового пароля не найден"));
 
@@ -85,7 +85,7 @@ public class SignInByOtpServiceImpl implements SignInByOtpService {
         return ctx;
     }
 
-    private VerifySignInContext compareOtp(VerifySignInContext ctx) {
+    private SignInByOtpContext compareOtp(SignInByOtpContext ctx) {
         String actualOtp = ctx.getOtpEntity().getOtp();
         String enteredOtp = ctx.getRequest().otp();
 
@@ -97,7 +97,7 @@ public class SignInByOtpServiceImpl implements SignInByOtpService {
         throw new ResponseStatusException(BAD_REQUEST, "Отп не верный");
     }
 
-    private VerifySignInContext activateStatusUserProfile(VerifySignInContext ctx) {
+    private SignInByOtpContext activateStatusUserProfile(SignInByOtpContext ctx) {
         if (ActivityStatus.INACTIVE.equals(ctx.getUserProfile().getActivityStatus())) {
             ctx.getUserProfile().setActivityStatus(ActivityStatus.ACTIVE);
             return ctx;
@@ -105,14 +105,14 @@ public class SignInByOtpServiceImpl implements SignInByOtpService {
         return ctx;
     }
 
-    private VerifySignInContext updateVisitDate(VerifySignInContext ctx) {
+    private SignInByOtpContext updateVisitDate(SignInByOtpContext ctx) {
         var userProfile = ctx.getUserProfile();
         userProfile.setLastVisitAt(LocalDateTime.now());
         userProfileRepository.save(userProfile);
         return ctx;
     }
 
-    private SignInResponse createResponse(VerifySignInContext ctx) {
+    private SignInResponse createResponse(SignInByOtpContext ctx) {
         return ctx.getSignInResponse();
     }
 }

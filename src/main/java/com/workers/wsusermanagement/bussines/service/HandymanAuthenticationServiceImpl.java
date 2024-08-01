@@ -1,17 +1,19 @@
 package com.workers.wsusermanagement.bussines.service;
 
 import com.workers.wsusermanagement.bussines.interfaces.HandymanAuthenticationService;
+import com.workers.wsusermanagement.bussines.service.signin.context.SignInByOtpContext;
+import com.workers.wsusermanagement.bussines.service.signin.context.SignInByPassContext;
 import com.workers.wsusermanagement.bussines.service.signin.context.SignInContext;
-import com.workers.wsusermanagement.bussines.service.signin.context.VerifySignInContext;
 import com.workers.wsusermanagement.bussines.service.signin.interfaces.SignInByOtpService;
 import com.workers.wsusermanagement.bussines.service.signin.interfaces.SignInService;
 import com.workers.wsusermanagement.bussines.service.signup.context.SignUpContext;
 import com.workers.wsusermanagement.bussines.service.signup.context.VerifySignUpContext;
 import com.workers.wsusermanagement.bussines.service.signup.interfaces.SignUpService;
 import com.workers.wsusermanagement.bussines.service.signup.interfaces.VerifySignUpService;
+import com.workers.wsusermanagement.rest.inbound.dto.LoginUserDtoRequest;
 import com.workers.wsusermanagement.rest.inbound.dto.OtpRequest;
-import com.workers.wsusermanagement.rest.inbound.dto.UserSignInRequest;
-import com.workers.wsusermanagement.rest.inbound.dto.UserSignUpRequest;
+import com.workers.wsusermanagement.rest.inbound.dto.PasswordRequest;
+import com.workers.wsusermanagement.rest.inbound.dto.RegistryUserDtoRequest;
 import com.workers.wsusermanagement.rest.inbound.mapper.SignInMapper;
 import com.workers.wsusermanagement.rest.inbound.mapper.SignUpMapper;
 import com.workers.wsusermanagement.rest.inbound.mapper.VerifySignUpMapper;
@@ -40,7 +42,7 @@ public class HandymanAuthenticationServiceImpl
     }
 
     @Override
-    protected SignUpContext mapToSignUpContext(UserSignUpRequest request) {
+    protected SignUpContext mapToSignUpContext(RegistryUserDtoRequest request) {
         return signUpMapper.toHandymanServiceContext(request);
     }
 
@@ -50,12 +52,17 @@ public class HandymanAuthenticationServiceImpl
     }
 
     @Override
-    protected SignInContext mapToSignInContext(UserSignInRequest request) {
+    protected SignInContext mapToSignInContext(LoginUserDtoRequest request) {
         return signInMapper.toServiceContext(request);
     }
 
     @Override
-    protected VerifySignInContext mapToVerifySignInContext(OtpRequest request) {
-        return signInMapper.toVerifyServiceContext(request);
+    protected SignInByOtpContext mapToSignInByOtpContext(OtpRequest request) {
+        return signInMapper.toSignInByOtpContext(request);
+    }
+
+    @Override
+    protected SignInByPassContext mapToSignInByPassContext(PasswordRequest request) {
+        return signInMapper.toSignInByPassContext(request);
     }
 }

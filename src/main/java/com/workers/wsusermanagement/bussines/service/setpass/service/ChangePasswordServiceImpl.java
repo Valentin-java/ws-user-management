@@ -3,14 +3,14 @@ package com.workers.wsusermanagement.bussines.service.setpass.service;
 import com.workers.wsusermanagement.bussines.service.setpass.context.ChangePasswordContext;
 import com.workers.wsusermanagement.bussines.service.setpass.interfaces.ChangePasswordService;
 import com.workers.wsusermanagement.bussines.service.setpass.mapper.ChangeContextMapper;
-import com.workers.wsusermanagement.bussines.service.signin.context.VerifySignInContext;
+import com.workers.wsusermanagement.bussines.service.signin.context.SignInByOtpContext;
 import com.workers.wsusermanagement.bussines.service.signin.model.SignInResponse;
 import com.workers.wsusermanagement.persistence.entity.OtpEntity;
 import com.workers.wsusermanagement.persistence.enums.StatusOtp;
 import com.workers.wsusermanagement.persistence.repository.OtpEntityRepository;
 import com.workers.wsusermanagement.persistence.repository.UserProfileRepository;
 import com.workers.wsusermanagement.rest.outbound.process.changepass.interfaces.ChangePasswordAfterOtpConfirmClient;
-import com.workers.wsusermanagement.rest.outbound.process.login.interfaces.CustomerLoginProcessFeignClient;
+import com.workers.wsusermanagement.rest.outbound.process.login.interfaces.CustomerLoginByOtpProcessClient;
 import com.workers.wsusermanagement.rest.outbound.process.notification.interfaces.SendWarnNotificationFeignClient;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,7 +31,7 @@ public class ChangePasswordServiceImpl implements ChangePasswordService {
 
     private final ChangePasswordAfterOtpConfirmClient changePasswordAfterOtpConfirmClient;
     private final SendWarnNotificationFeignClient sendWarnNotificationFeignClient;
-    private final CustomerLoginProcessFeignClient customerLoginProcessFeignClient;
+    private final CustomerLoginByOtpProcessClient customerLoginByOtpProcessClient;
     private final UserProfileRepository userProfileRepository;
     private final OtpEntityRepository otpEntityRepository;
     private final ChangeContextMapper changeContextMapper;
@@ -49,7 +49,7 @@ public class ChangePasswordServiceImpl implements ChangePasswordService {
                 .map(changePasswordAfterOtpConfirmClient::requestToExecuteByService)
                 .map(sendWarnNotificationFeignClient::requestToExecuteByService)
                 .map(changeContextMapper::toVerifiedSignIn)
-                .map(customerLoginProcessFeignClient::requestToExecuteByService)
+                .map(customerLoginByOtpProcessClient::requestToExecuteByService)
 
                 .map(this::createResponse)
                 .orElseThrow(() -> new ResponseStatusException(BAD_REQUEST, UNEXPECTED_ERROR_MESSAGE));
@@ -100,7 +100,7 @@ public class ChangePasswordServiceImpl implements ChangePasswordService {
         throw new ResponseStatusException(BAD_REQUEST, "Одноразовый пароль не подтвержден");
     }
 
-    private SignInResponse createResponse(VerifySignInContext ctx) {
+    private SignInResponse createResponse(SignInByOtpContext ctx) {
         return ctx.getSignInResponse();
     }
 }

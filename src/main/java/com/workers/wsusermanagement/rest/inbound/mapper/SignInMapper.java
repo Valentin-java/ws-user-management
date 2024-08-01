@@ -1,10 +1,12 @@
 package com.workers.wsusermanagement.rest.inbound.mapper;
 
+import com.workers.wsusermanagement.bussines.service.signin.context.SignInByOtpContext;
+import com.workers.wsusermanagement.bussines.service.signin.context.SignInByPassContext;
 import com.workers.wsusermanagement.bussines.service.signin.context.SignInContext;
-import com.workers.wsusermanagement.bussines.service.signin.context.VerifySignInContext;
 import com.workers.wsusermanagement.config.mapper.MapperConfiguration;
+import com.workers.wsusermanagement.rest.inbound.dto.LoginUserDtoRequest;
 import com.workers.wsusermanagement.rest.inbound.dto.OtpRequest;
-import com.workers.wsusermanagement.rest.inbound.dto.UserSignInRequest;
+import com.workers.wsusermanagement.rest.inbound.dto.PasswordRequest;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
@@ -16,7 +18,7 @@ public interface SignInMapper {
     @Mapping(target = "userProfile", ignore = true)
     @Mapping(target = "notificationRequest", ignore = true)
     @Mapping(target = "otpEntity", ignore = true)
-    SignInContext toServiceContext(UserSignInRequest request);
+    SignInContext toServiceContext(LoginUserDtoRequest request);
 
     @Mapping(target = "request.uuid", source = "uuid")
     @Mapping(target = "request.otp", source = "otp")
@@ -24,5 +26,13 @@ public interface SignInMapper {
     @Mapping(target = "userProfile", ignore = true)
     @Mapping(target = "otpEntity", ignore = true)
     @Mapping(target = "authRequest", ignore = true)
-    VerifySignInContext toVerifyServiceContext(OtpRequest request);
+    SignInByOtpContext toSignInByOtpContext(OtpRequest request);
+
+    @Mapping(target = "request.phoneNumber", source = "phoneNumber", qualifiedByName = "FormatPhoneNumber")
+    @Mapping(target = "request.password", source = "password")
+    @Mapping(target = "signInResponse", ignore = true)
+    @Mapping(target = "userProfile", ignore = true)
+    @Mapping(target = "authRequest", ignore = true)
+    SignInByPassContext toSignInByPassContext(PasswordRequest request);
+
 }

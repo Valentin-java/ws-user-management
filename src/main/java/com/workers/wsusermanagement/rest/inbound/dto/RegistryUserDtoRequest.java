@@ -1,8 +1,7 @@
 package com.workers.wsusermanagement.rest.inbound.dto;
 
-public record UserProfileResponse(
+public record RegistryUserDtoRequest(
         String phoneNumber,
-        String firstName,
-        Boolean otp
+        String firstName
 ) {
 }
