@@ -14,7 +14,7 @@ import org.mapstruct.Mapping;
 public interface SignInMapper {
 
     @Mapping(target = "request.phoneNumber", source = "phoneNumber", qualifiedByName = "FormatPhoneNumber")
-    @Mapping(target = "signUpResponse", ignore = true)
+    @Mapping(target = "loginUserResponse", ignore = true)
     @Mapping(target = "userProfile", ignore = true)
     @Mapping(target = "notificationRequest", ignore = true)
     @Mapping(target = "otpEntity", ignore = true)
