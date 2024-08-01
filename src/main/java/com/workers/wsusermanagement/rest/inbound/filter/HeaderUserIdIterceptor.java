@@ -32,7 +32,7 @@ public class HeaderUserIdIterceptor implements Filter {
 //            log.debug("[HeaderUserIdInterceptor] {} request {} was called with params: {}", httpMethod, req.getRequestURI(), commonProps);
 //        } catch (ResponseStatusException e) {
 //            log.error("[HeaderUserIdInterceptor] Error: {}", e.getReason());
-//            ((HttpServletResponse) response).sendError(HttpStatus.BAD_REQUEST.value(), e.getReason());
+//            ((HttpServletResponse) uuid).sendError(HttpStatus.BAD_REQUEST.value(), e.getReason());
 //            return;
 //        } catch (Exception e) {
 //            log.error("[HeaderUserIdInterceptor] Error: {}", e.getMessage());

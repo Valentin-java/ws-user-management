@@ -2,8 +2,7 @@ package com.workers.wsusermanagement.bussines.service.signin.service;
 
 import com.workers.wsusermanagement.bussines.service.signin.context.SignInContext;
 import com.workers.wsusermanagement.bussines.service.signin.interfaces.SignInService;
-import com.workers.wsusermanagement.bussines.service.signup.model.SignUpResponse;
-import com.workers.wsusermanagement.persistence.enums.ActivityStatus;
+import com.workers.wsusermanagement.bussines.service.signin.model.LoginUserResponse;
 import com.workers.wsusermanagement.persistence.enums.StatusOtp;
 import com.workers.wsusermanagement.persistence.mapper.OtpEntityMapper;
 import com.workers.wsusermanagement.persistence.repository.OtpEntityRepository;
@@ -31,10 +30,9 @@ public class SignInServiceImpl implements SignInService {
     private final OtpEntityMapper otpEntityMapper;
 
     @Override
-    public SignUpResponse doProcess(SignInContext ctx) {
+    public LoginUserResponse doProcess(SignInContext ctx) {
         return Optional.of(ctx)
                 .map(this::validateUniqueCustomer)
-                .map(this::validateUserStatus)
                 .map(this::deactivateOtherOtp)
                 .map(this::createOtpEntity)
 
@@ -52,14 +50,8 @@ public class SignInServiceImpl implements SignInService {
         return ctx;
     }
 
-    private SignInContext validateUserStatus(SignInContext ctx) {
-        if (ActivityStatus.ACTIVE.equals(ctx.getUserProfile().getActivityStatus())) {
-            return ctx;
-        }
-        throw new ResponseStatusException(BAD_REQUEST, "Пользователь еще не активирован");
-    }
-
     private SignInContext deactivateOtherOtp(SignInContext ctx) {
+        if (!ctx.getUserProfile().getOtp()) return ctx;
         var otpEntityList = otpEntityRepository.findAllByUsername(ctx.getRequest().phoneNumber());
         otpEntityList.forEach(otp -> otp.setStatusOtp(StatusOtp.DECLINED));
 
@@ -68,6 +60,7 @@ public class SignInServiceImpl implements SignInService {
     }
 
     private SignInContext createOtpEntity(SignInContext ctx) {
+        if (!ctx.getUserProfile().getOtp()) return ctx;
         var otpEntity = otpEntityMapper.toSignUpOtpEntity(ctx);
         ctx.setOtpEntity(otpEntity);
         otpEntityRepository.save(otpEntity);
@@ -75,13 +68,15 @@ public class SignInServiceImpl implements SignInService {
     }
 
     private SignInContext updateVisitDate(SignInContext ctx) {
+        if (!ctx.getUserProfile().getOtp()) return ctx;
         var userProfile = ctx.getUserProfile();
         userProfile.setLastVisitAt(LocalDateTime.now());
         userProfileRepository.save(userProfile);
         return ctx;
     }
 
-    private SignUpResponse createResponse(SignInContext ctx) {
-        return new SignUpResponse(ctx.getOtpEntity().getUuid());
+    private LoginUserResponse createResponse(SignInContext ctx) {
+        String uuid = ctx.getOtpEntity().getUuid() != null ? ctx.getOtpEntity().getUuid() : null;
+        return new LoginUserResponse(uuid, ctx.getUserProfile().getOtp());
     }
 }

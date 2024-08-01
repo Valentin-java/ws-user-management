@@ -10,7 +10,7 @@ import lombok.experimental.Accessors;
 
 @Data
 @Accessors(chain = true)
-public class VerifySignInContext {
+public class SignInByOtpContext {
     private OtpRequest request;
     private AuthRequest authRequest;
     private SignInResponse signInResponse;

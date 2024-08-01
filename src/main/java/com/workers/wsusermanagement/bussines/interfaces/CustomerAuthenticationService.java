@@ -1,18 +1,22 @@
 package com.workers.wsusermanagement.bussines.interfaces;
 
+import com.workers.wsusermanagement.bussines.service.signin.model.LoginUserResponse;
 import com.workers.wsusermanagement.bussines.service.signin.model.SignInResponse;
-import com.workers.wsusermanagement.bussines.service.signup.model.SignUpResponse;
+import com.workers.wsusermanagement.bussines.service.signup.model.RegistryUserResponse;
+import com.workers.wsusermanagement.rest.inbound.dto.LoginUserDtoRequest;
 import com.workers.wsusermanagement.rest.inbound.dto.OtpRequest;
-import com.workers.wsusermanagement.rest.inbound.dto.UserSignInRequest;
-import com.workers.wsusermanagement.rest.inbound.dto.UserSignUpRequest;
+import com.workers.wsusermanagement.rest.inbound.dto.PasswordRequest;
+import com.workers.wsusermanagement.rest.inbound.dto.RegistryUserDtoRequest;
 
 public interface CustomerAuthenticationService {
 
-    SignUpResponse signUp(UserSignUpRequest request);
+    RegistryUserResponse signUp(RegistryUserDtoRequest request);
 
     SignInResponse verifySignUp(OtpRequest request);
 
-    SignUpResponse signIn(UserSignInRequest request);
+    LoginUserResponse signIn(LoginUserDtoRequest request);
 
     SignInResponse signInByOtp(OtpRequest request);
+
+    SignInResponse signInByPassword(PasswordRequest request);
 }

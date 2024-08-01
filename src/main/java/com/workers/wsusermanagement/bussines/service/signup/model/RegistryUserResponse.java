@@ -1,6 +1,6 @@
 package com.workers.wsusermanagement.bussines.service.signup.model;
 
-public record SignUpResponse(
-        String response
+public record RegistryUserResponse(
+        String uuid
 ) {
 }

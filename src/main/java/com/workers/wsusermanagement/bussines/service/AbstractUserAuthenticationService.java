@@ -1,18 +1,22 @@
 package com.workers.wsusermanagement.bussines.service;
 
+import com.workers.wsusermanagement.bussines.service.signin.context.SignInByOtpContext;
+import com.workers.wsusermanagement.bussines.service.signin.context.SignInByPassContext;
 import com.workers.wsusermanagement.bussines.service.signin.context.SignInContext;
-import com.workers.wsusermanagement.bussines.service.signin.context.VerifySignInContext;
 import com.workers.wsusermanagement.bussines.service.signin.interfaces.SignInByOtpService;
+import com.workers.wsusermanagement.bussines.service.signin.interfaces.SignInByPasswordService;
 import com.workers.wsusermanagement.bussines.service.signin.interfaces.SignInService;
+import com.workers.wsusermanagement.bussines.service.signin.model.LoginUserResponse;
 import com.workers.wsusermanagement.bussines.service.signin.model.SignInResponse;
 import com.workers.wsusermanagement.bussines.service.signup.context.SignUpContext;
 import com.workers.wsusermanagement.bussines.service.signup.context.VerifySignUpContext;
 import com.workers.wsusermanagement.bussines.service.signup.interfaces.SignUpService;
 import com.workers.wsusermanagement.bussines.service.signup.interfaces.VerifySignUpService;
-import com.workers.wsusermanagement.bussines.service.signup.model.SignUpResponse;
+import com.workers.wsusermanagement.bussines.service.signup.model.RegistryUserResponse;
+import com.workers.wsusermanagement.rest.inbound.dto.LoginUserDtoRequest;
 import com.workers.wsusermanagement.rest.inbound.dto.OtpRequest;
-import com.workers.wsusermanagement.rest.inbound.dto.UserSignInRequest;
-import com.workers.wsusermanagement.rest.inbound.dto.UserSignUpRequest;
+import com.workers.wsusermanagement.rest.inbound.dto.PasswordRequest;
+import com.workers.wsusermanagement.rest.inbound.dto.RegistryUserDtoRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -32,8 +36,9 @@ public abstract class AbstractUserAuthenticationService {
     protected final VerifySignUpService verifySignUpService;
     protected final SignInService signInService;
     protected final SignInByOtpService signInByOtpService;
+    protected final SignInByPasswordService signInByPasswordService;
 
-    public SignUpResponse signUp(UserSignUpRequest request) {
+    public RegistryUserResponse signUp(RegistryUserDtoRequest request) {
         return Optional.of(request)
                 .map(this::mapToSignUpContext)
                 .map(signUpService::doProcess)
@@ -47,7 +52,7 @@ public abstract class AbstractUserAuthenticationService {
                 .orElseThrow(() -> new ResponseStatusException(BAD_REQUEST, UNEXPECTED_ERROR_MESSAGE));
     }
 
-    public SignUpResponse signIn(UserSignInRequest request) {
+    public LoginUserResponse signIn(LoginUserDtoRequest request) {
         return Optional.of(request)
                 .map(this::mapToSignInContext)
                 .map(signInService::doProcess)
@@ -56,16 +61,25 @@ public abstract class AbstractUserAuthenticationService {
 
     public SignInResponse signInByOtp(OtpRequest request) {
         return Optional.of(request)
-                .map(this::mapToVerifySignInContext)
+                .map(this::mapToSignInByOtpContext)
                 .map(signInByOtpService::doProcess)
                 .orElseThrow(() -> new ResponseStatusException(BAD_REQUEST, UNEXPECTED_ERROR_MESSAGE));
     }
 
-    protected abstract SignUpContext mapToSignUpContext(UserSignUpRequest request);
+    public SignInResponse signInByPassword(PasswordRequest request) {
+        return Optional.of(request)
+                .map(this::mapToSignInByPassContext)
+                .map(signInByPasswordService::doProcess)
+                .orElseThrow(() -> new ResponseStatusException(BAD_REQUEST, UNEXPECTED_ERROR_MESSAGE));
+    }
+
+    protected abstract SignUpContext mapToSignUpContext(RegistryUserDtoRequest request);
 
     protected abstract VerifySignUpContext mapToVerifySignUpContext(OtpRequest request);
 
-    protected abstract SignInContext mapToSignInContext(UserSignInRequest request);
+    protected abstract SignInContext mapToSignInContext(LoginUserDtoRequest request);
 
-    protected abstract VerifySignInContext mapToVerifySignInContext(OtpRequest request);
+    protected abstract SignInByOtpContext mapToSignInByOtpContext(OtpRequest request);
+
+    protected abstract SignInByPassContext mapToSignInByPassContext(PasswordRequest request);
 }

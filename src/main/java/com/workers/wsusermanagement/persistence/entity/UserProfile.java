@@ -56,6 +56,9 @@ public class UserProfile {
     @Column(name = "text_error")
     private String textError;
 
+    @Column(name = "otp")
+    private Boolean otp;
+
     @Column(name = "created_at")
     @CreationTimestamp
     private LocalDateTime createdAt;

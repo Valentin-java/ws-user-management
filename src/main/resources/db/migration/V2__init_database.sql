@@ -7,6 +7,7 @@ CREATE TABLE IF NOT EXISTS "ws01_user_profile" (
     activity_status VARCHAR(255) NOT NULL,
     customer_role VARCHAR(255),
     text_error VARCHAR(255),
+    otp BOOLEAN,
     created_at TIMESTAMP,
     updated_at TIMESTAMP,
     last_visit_at TIMESTAMP,

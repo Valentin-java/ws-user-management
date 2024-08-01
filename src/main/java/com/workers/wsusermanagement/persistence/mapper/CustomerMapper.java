@@ -1,6 +1,6 @@
 package com.workers.wsusermanagement.persistence.mapper;
 
-import com.workers.wsusermanagement.bussines.service.signup.model.SignUpRequest;
+import com.workers.wsusermanagement.bussines.service.signup.model.RegistryUserRequest;
 import com.workers.wsusermanagement.config.mapper.MapperConfiguration;
 import com.workers.wsusermanagement.persistence.entity.UserProfile;
 import org.mapstruct.Mapper;
@@ -17,5 +17,5 @@ public interface CustomerMapper {
     @Mapping(target = "lastVisitAt", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
-    UserProfile toEntity(SignUpRequest request);
+    UserProfile toEntity(RegistryUserRequest request);
 }
