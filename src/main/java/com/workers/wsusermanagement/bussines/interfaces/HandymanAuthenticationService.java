@@ -14,5 +14,5 @@ public interface HandymanAuthenticationService {
 
     SignUpResponse signIn(UserSignInRequest request);
 
-    SignInResponse verifySignIn(OtpRequest request);
+    SignInResponse signInByOtp(OtpRequest request);
 }

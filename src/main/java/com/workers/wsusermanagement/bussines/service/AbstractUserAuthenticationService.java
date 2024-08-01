@@ -2,8 +2,8 @@ package com.workers.wsusermanagement.bussines.service;
 
 import com.workers.wsusermanagement.bussines.service.signin.context.SignInContext;
 import com.workers.wsusermanagement.bussines.service.signin.context.VerifySignInContext;
+import com.workers.wsusermanagement.bussines.service.signin.interfaces.SignInByOtpService;
 import com.workers.wsusermanagement.bussines.service.signin.interfaces.SignInService;
-import com.workers.wsusermanagement.bussines.service.signin.interfaces.VerifySignInService;
 import com.workers.wsusermanagement.bussines.service.signin.model.SignInResponse;
 import com.workers.wsusermanagement.bussines.service.signup.context.SignUpContext;
 import com.workers.wsusermanagement.bussines.service.signup.context.VerifySignUpContext;
@@ -31,7 +31,7 @@ public abstract class AbstractUserAuthenticationService {
     protected final SignUpService signUpService;
     protected final VerifySignUpService verifySignUpService;
     protected final SignInService signInService;
-    protected final VerifySignInService verifySignInService;
+    protected final SignInByOtpService signInByOtpService;
 
     public SignUpResponse signUp(UserSignUpRequest request) {
         return Optional.of(request)
@@ -54,10 +54,10 @@ public abstract class AbstractUserAuthenticationService {
                 .orElseThrow(() -> new ResponseStatusException(BAD_REQUEST, UNEXPECTED_ERROR_MESSAGE));
     }
 
-    public SignInResponse verifySignIn(OtpRequest request) {
+    public SignInResponse signInByOtp(OtpRequest request) {
         return Optional.of(request)
                 .map(this::mapToVerifySignInContext)
-                .map(verifySignInService::doProcess)
+                .map(signInByOtpService::doProcess)
                 .orElseThrow(() -> new ResponseStatusException(BAD_REQUEST, UNEXPECTED_ERROR_MESSAGE));
     }
 
