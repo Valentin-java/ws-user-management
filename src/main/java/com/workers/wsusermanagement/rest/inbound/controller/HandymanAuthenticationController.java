@@ -35,6 +35,6 @@ public class HandymanAuthenticationController {
 
     @PostMapping("/verify/sign-in")
     public ResponseEntity<?> verifySignIn(@RequestBody OtpRequest request) {
-        return ResponseEntity.ok(handymanAuthenticationService.verifySignIn(request));
+        return ResponseEntity.ok(handymanAuthenticationService.signInByOtp(request));
     }
 }

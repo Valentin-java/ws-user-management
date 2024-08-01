@@ -1,7 +1,7 @@
 package com.workers.wsusermanagement.bussines.service.signin.service;
 
 import com.workers.wsusermanagement.bussines.service.signin.context.VerifySignInContext;
-import com.workers.wsusermanagement.bussines.service.signin.interfaces.VerifySignInService;
+import com.workers.wsusermanagement.bussines.service.signin.interfaces.SignInByOtpService;
 import com.workers.wsusermanagement.bussines.service.signin.model.SignInResponse;
 import com.workers.wsusermanagement.persistence.entity.OtpEntity;
 import com.workers.wsusermanagement.persistence.enums.ActivityStatus;
@@ -24,7 +24,7 @@ import static org.springframework.http.HttpStatus.BAD_REQUEST;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class VerifySignInServiceImpl implements VerifySignInService {
+public class SignInByOtpServiceImpl implements SignInByOtpService {
 
     private final CustomerLoginProcessFeignClient customerLoginProcessFeignClient;
     private final UserProfileRepository userProfileRepository;

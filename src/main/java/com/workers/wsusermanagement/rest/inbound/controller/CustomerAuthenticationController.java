@@ -33,8 +33,20 @@ public class CustomerAuthenticationController {
         return ResponseEntity.ok(customerAuthenticationService.signIn(request));
     }
 
-    @PostMapping("/verify/sign-in")
-    public ResponseEntity<?> verifySignIn(@RequestBody OtpRequest request) {
-        return ResponseEntity.ok(customerAuthenticationService.verifySignIn(request));
+    @PostMapping("/otp/sign-in")
+    public ResponseEntity<?> signInByOtp(@RequestBody OtpRequest request) {
+        return ResponseEntity.ok(customerAuthenticationService.signInByOtp(request));
     }
+
+    @PostMapping("/pass/sign-in")
+    public ResponseEntity<?> signInByPassword(@RequestBody OtpRequest request) {
+        return ResponseEntity.ok(customerAuthenticationService.signInByPassword(request));
+    }
+
+    // Надо возможность задать пароль для существующего пользователя
+
+    // В ответе добавить по мимо uuid bool otp
+
+    // Ручка для логина по паролю
+    // ну и соотвественно на ЭФ ввода именно пароля будет ссылка на сброс пароля
 }

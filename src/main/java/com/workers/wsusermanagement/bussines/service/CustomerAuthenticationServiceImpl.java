@@ -3,8 +3,8 @@ package com.workers.wsusermanagement.bussines.service;
 import com.workers.wsusermanagement.bussines.interfaces.CustomerAuthenticationService;
 import com.workers.wsusermanagement.bussines.service.signin.context.SignInContext;
 import com.workers.wsusermanagement.bussines.service.signin.context.VerifySignInContext;
+import com.workers.wsusermanagement.bussines.service.signin.interfaces.SignInByOtpService;
 import com.workers.wsusermanagement.bussines.service.signin.interfaces.SignInService;
-import com.workers.wsusermanagement.bussines.service.signin.interfaces.VerifySignInService;
 import com.workers.wsusermanagement.bussines.service.signup.context.SignUpContext;
 import com.workers.wsusermanagement.bussines.service.signup.context.VerifySignUpContext;
 import com.workers.wsusermanagement.bussines.service.signup.interfaces.SignUpService;
@@ -29,11 +29,11 @@ public class CustomerAuthenticationServiceImpl
     public CustomerAuthenticationServiceImpl(SignUpService signUpService,
                                              VerifySignUpService verifySignUpService,
                                              SignInService signInService,
-                                             VerifySignInService verifySignInService,
+                                             SignInByOtpService signInByOtpService,
                                              SignUpMapper signUpMapper,
                                              SignInMapper signInMapper,
                                              VerifySignUpMapper verifySignUpMapper) {
-        super(signUpService, verifySignUpService, signInService, verifySignInService);
+        super(signUpService, verifySignUpService, signInService, signInByOtpService);
         this.signUpMapper = signUpMapper;
         this.verifySignUpMapper = verifySignUpMapper;
         this.signInMapper = signInMapper;
