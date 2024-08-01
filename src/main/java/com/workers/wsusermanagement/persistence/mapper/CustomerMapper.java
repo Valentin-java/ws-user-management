@@ -17,5 +17,6 @@ public interface CustomerMapper {
     @Mapping(target = "lastVisitAt", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
+    @Mapping(target = "otp", constant = "true")
     UserProfile toEntity(RegistryUserRequest request);
 }
